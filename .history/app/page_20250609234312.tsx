@@ -167,6 +167,7 @@ export default function Page() {
           
           {/* Responsive Layout Container */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 xl:gap-8">
+            
             {/* Voice Search Panel - Primary CTA */}
             <section 
               aria-labelledby="voice-section"

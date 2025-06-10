@@ -38,6 +38,7 @@ export default function Page() {
     prior_results: [],
     context: "",
   });
+  const [showNoAgentNotification, setShowNoAgentNotification] = useState(false);
 
   const handleContactsUploaded = useCallback(async (newContacts: Contact[], type: 'linkedin' | 'instagram') => {
     setIsUploading(true);
@@ -150,103 +151,72 @@ export default function Page() {
           {/* Hero Section */}
           <HeroSection />
           
-          {/* Upload Panel - Always at top */}
-          <section aria-labelledby="upload-section">
-            <h2 id="upload-section" className="sr-only">Upload your network data</h2>
-            <UploadPanel 
-              onContactsUploaded={handleContactsUploaded}
-              isUploading={isUploading}
-            />
-          </section>
-          
-          {/* Contact Status */}
-          <ContactStatus 
-            contacts={contacts}
-            isUploading={isUploading}
-          />
-          
-          {/* Responsive Layout Container */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 xl:gap-8">
-            {/* Voice Search Panel - Primary CTA */}
-            <section 
-              aria-labelledby="voice-section"
-              className="lg:order-1"
-            >
-              <h2 id="voice-section" className="sr-only">Voice search interface</h2>
-              <div className="sticky top-20 space-y-4">
-                <VoiceSearchInterface
-                  isConnected={isVoiceConnected}
-                  isSearching={isSearching}
-                  currentQuery={currentQuery}
-                  searchResults={searchResults}
-                  currentTranscript={currentTranscript}
-                  onConnect={onConnectButtonClicked}
-                />
-                
-                {/* Hidden Voice Assistant for processing */}
-                {isVoiceConnected && (
-                  <div className="hidden">
-                    <SimpleVoiceAssistant 
-                      onConnectButtonClicked={onConnectButtonClicked}
-                      onVoiceQuery={handleVoiceQuery}
-                      onTranscriptUpdate={setCurrentTranscript}
-                    />
-                  </div>
-                )}
-              </div>
-            </section>
-            
-            {/* Results Panel */}
-            <section 
-              aria-labelledby="results-section"
-              className="lg:order-2"
-            >
-              <h2 id="results-section" className="sr-only">Search results</h2>
-              {(searchResults.length > 0 || isSearching || currentQuery) && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <SearchResults
-                    results={searchResults}
-                    isLoading={isSearching}
-                    query={currentQuery}
-                  />
-                </motion.div>
-              )}
+          {/* Voice Search and Upload Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left Column - Voice Search */}
+            <div className="space-y-6">
+              <VoiceSearchInterface
+                isConnected={isVoiceConnected}
+                isSearching={isSearching}
+                currentQuery={currentQuery}
+                searchResults={searchResults}
+                onConnect={onConnectButtonClicked}
+                currentTranscript={currentTranscript}
+              />
               
-              {/* Empty State for Results */}
-              {!searchResults.length && !isSearching && !currentQuery && isVoiceConnected && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                  className="text-center p-8 text-muted-foreground"
-                >
-                  <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
-                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-medium mb-2">Ready to search</h3>
-                  <p className="text-sm max-w-sm mx-auto">
-                    Use the voice interface to search your network. Your results will appear here.
-                  </p>
-                </motion.div>
-              )}
-            </section>
-          </div>
-          
-          {/* Mobile: Voice Button Fixed/Floating for small screens */}
-          {isVoiceConnected && (
-            <div className="lg:hidden">
-              <div className="fixed bottom-6 right-6 z-40">
-                <FloatingVoiceButton />
-              </div>
+              {/* Search Results */}
+              <SearchResults
+                results={searchResults}
+                isLoading={isSearching}
+                query={currentQuery}
+              />
             </div>
-          )}
+
+            {/* Right Column - Upload Panel */}
+            <div className="space-y-6">
+              <section aria-labelledby="upload-section">
+                <h2 id="upload-section" className="sr-only">Upload your network data</h2>
+                <UploadPanel 
+                  onContactsUploaded={handleContactsUploaded}
+                  isUploading={isUploading}
+                />
+              </section>
+              
+              {/* Contact Status */}
+              <ContactStatus 
+                contacts={contacts}
+                isUploading={isUploading}
+              />
+            </div>
+          </div>
+
+          {/* Responsive Layout Container */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left Column - Transcription View */}
+            <div className="space-y-4">
+              <TranscriptionView
+                onVoiceQuery={handleVoiceQuery}
+                onTranscriptUpdate={setCurrentTranscript}
+              />
+            </div>
+
+            {/* Right Column - Voice Assistant Controls */}
+            <div className="space-y-4">
+              <VoiceAssistantControlBar />
+              <RoomAudioRenderer />
+            </div>
+          </div>
         </main>
+
+        {/* Floating Voice Button */}
+        <FloatingVoiceButton />
+
+        {/* Notifications */}
+        <AnimatePresence>
+          {showNoAgentNotification && (
+            <NoAgentNotification onClose={() => setShowNoAgentNotification(false)} />
+          )}
+        </AnimatePresence>
       </RoomContext.Provider>
     </div>
   );
@@ -429,6 +399,7 @@ function FloatingVoiceButton() {
     </motion.div>
   );
 }
+
 function onDeviceFailure(error: Error) {
   console.error(error);
   alert(

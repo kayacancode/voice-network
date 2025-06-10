@@ -7,7 +7,7 @@ import { UploadPanel } from "@/components/UploadPanel";
 import { SearchResults } from "@/components/SearchResults";
 import { ContactStatus } from "@/components/ContactStatus";
 import { VoiceSearchInterface } from "@/components/VoiceSearchInterface";
-import { HeroSection } from "@/components/HeroSection";
+import { Header } from "@/components/Header";
 import {
   BarVisualizer,
   DisconnectButton,
@@ -91,7 +91,8 @@ export default function Page() {
       if (llmResult.success) {
         setConversationState(llmResult.updated_conversation_state);
 
-        if (llmResult.intent === 'search' || llmResult.intent === 'refine') {
+        // Only proceed with search if we have a non-empty query
+        if (llmResult.refined_query && llmResult.refined_query.trim()) {
           // Perform the search
           const searchResponse = await fetch('/api/search-contacts', {
             method: 'POST',
@@ -99,19 +100,26 @@ export default function Page() {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              query: llmResult.refined_query,
-              topK: 20,
+              query: llmResult.refined_query.trim(),
+              topK: 5,
             }),
           });
 
           const searchResult = await searchResponse.json();
           if (searchResult.success) {
             setSearchResults(searchResult.results);
+          } else {
+            console.error('Search failed:', searchResult.error);
+            setSearchResults([]);
           }
+        } else {
+          console.error('Invalid query received from LLM');
+          setSearchResults([]);
         }
       }
     } catch (error) {
       console.error('Error processing voice query:', error);
+      setSearchResults([]);
     } finally {
       setIsSearching(false);
     }
@@ -145,10 +153,11 @@ export default function Page() {
   return (
     <div data-lk-theme="default" className="min-h-screen bg-background">
       <RoomContext.Provider value={room}>
+        {/* Header */}
+        <Header />
+        
         {/* Main Content - Mobile First Responsive Layout */}
         <main className="container mx-auto px-4 py-6 space-y-6 max-w-7xl">
-          {/* Hero Section */}
-          <HeroSection />
           
           {/* Upload Panel - Always at top */}
           <section aria-labelledby="upload-section">
@@ -167,6 +176,7 @@ export default function Page() {
           
           {/* Responsive Layout Container */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 xl:gap-8">
+            
             {/* Voice Search Panel - Primary CTA */}
             <section 
               aria-labelledby="voice-section"

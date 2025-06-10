@@ -7,6 +7,7 @@ import { UploadPanel } from "@/components/UploadPanel";
 import { SearchResults } from "@/components/SearchResults";
 import { ContactStatus } from "@/components/ContactStatus";
 import { VoiceSearchInterface } from "@/components/VoiceSearchInterface";
+import { Header } from "@/components/Header";
 import { HeroSection } from "@/components/HeroSection";
 import {
   BarVisualizer,
@@ -145,6 +146,9 @@ export default function Page() {
   return (
     <div data-lk-theme="default" className="min-h-screen bg-background">
       <RoomContext.Provider value={room}>
+        {/* Header */}
+        <Header />
+        
         {/* Main Content - Mobile First Responsive Layout */}
         <main className="container mx-auto px-4 py-6 space-y-6 max-w-7xl">
           {/* Hero Section */}
@@ -167,6 +171,7 @@ export default function Page() {
           
           {/* Responsive Layout Container */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 xl:gap-8">
+            
             {/* Voice Search Panel - Primary CTA */}
             <section 
               aria-labelledby="voice-section"

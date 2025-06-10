@@ -48,7 +48,7 @@ class ContactSearchAssistant(Agent):
 
             contacts = []
             for match in pc_resp.matches:
-                if match.score > 0.3:
+                if match.score > 0.7:
                     md = match.metadata or {}
                     contacts.append({
                         "name":     md.get("name", ""),

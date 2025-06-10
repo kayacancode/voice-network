@@ -7,7 +7,7 @@ import { UploadPanel } from "@/components/UploadPanel";
 import { SearchResults } from "@/components/SearchResults";
 import { ContactStatus } from "@/components/ContactStatus";
 import { VoiceSearchInterface } from "@/components/VoiceSearchInterface";
-import { HeroSection } from "@/components/HeroSection";
+import { Header } from "@/components/Header";
 import {
   BarVisualizer,
   DisconnectButton,
@@ -67,55 +67,78 @@ export default function Page() {
     }
   }, []);
 
-  const handleVoiceQuery = useCallback(async (transcript: string) => {
-    if (!transcript.trim()) return;
-
+  const performSearch = useCallback(async (query: string) => {
+    console.log(`Performing search for: ${query}`);
     setIsSearching(true);
-    setCurrentQuery(transcript);
+    setCurrentQuery(query);
 
     try {
-      // First, process the query with LLM
-      const llmResponse = await fetch('/api/llm-query', {
+      // Perform the search using the API
+      const searchResponse = await fetch('/api/search-contacts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          user_transcript: transcript,
-          conversation_state: conversationState,
+          query: query,
+          topK: 20,
         }),
       });
 
-      const llmResult = await llmResponse.json();
-      
-      if (llmResult.success) {
-        setConversationState(llmResult.updated_conversation_state);
-
-        if (llmResult.intent === 'search' || llmResult.intent === 'refine') {
-          // Perform the search
-          const searchResponse = await fetch('/api/search-contacts', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              query: llmResult.refined_query,
-              topK: 20,
-            }),
-          });
-
-          const searchResult = await searchResponse.json();
-          if (searchResult.success) {
-            setSearchResults(searchResult.results);
+      const searchResult = await searchResponse.json();
+      if (searchResult.success) {
+        const results = searchResult.results;
+        setSearchResults(results);
+        
+        // Send results back to the agent via data channel
+        try {
+          if (room.state === "connected") {
+            const resultsData = {
+              type: "search_results",
+              results: results,
+              query: query,
+              timestamp: Date.now()
+            };
+            
+            await room.localParticipant.publishData(
+              new TextEncoder().encode(JSON.stringify(resultsData)),
+              { reliable: true }
+            );
+            
+            console.log(`Sent ${results.length} search results back to agent`);
           }
+        } catch (dataError) {
+          console.error('Error sending search results to agent:', dataError);
         }
+        
+        return results;
+      } else {
+        console.error('Search failed:', searchResult.error);
+        return [];
       }
     } catch (error) {
-      console.error('Error processing voice query:', error);
+      console.error('Error performing search:', error);
+      return [];
     } finally {
       setIsSearching(false);
     }
-  }, [conversationState]);
+  }, [room]);
+
+  const handleVoiceQuery = useCallback(async (transcript: string) => {
+    if (!transcript.trim()) return;
+
+    console.log(`Voice query received: ${transcript}`);
+    // For voice queries, we'll let the agent handle the search coordination
+    // The agent will send us a search request via data channel
+  }, []);
+
+  const handleAgentSearchRequest = useCallback(async (searchData: any) => {
+    const query = searchData.query;
+    console.log(`Agent requested search for: ${query}`);
+    
+    // Perform the search and send results back to agent
+    await performSearch(query);
+  }, [performSearch]);
 
   const onConnectButtonClicked = useCallback(async () => {
     // Generate room connection details
@@ -131,24 +154,58 @@ export default function Page() {
   }, [room]);
 
   useEffect(() => {
-    room.on(RoomEvent.MediaDevicesError, onDeviceFailure);
-    room.on(RoomEvent.Connected, () => setIsVoiceConnected(true));
-    room.on(RoomEvent.Disconnected, () => setIsVoiceConnected(false));
+    const handleDataReceived = async (data: Uint8Array, participant: any) => {
+      try {
+        const message = JSON.parse(new TextDecoder().decode(data));
+        console.log('Received data from agent:', message);
+        
+        if (message.type === "search_request") {
+          await handleAgentSearchRequest(message);
+        }
+      } catch (error) {
+        console.error('Error handling data from agent:', error);
+      }
+    };
+
+    const handleMediaDevicesError = (error: Error) => {
+      console.error(error);
+      alert(
+        "Error acquiring camera or microphone permissions. Please make sure you grant the necessary permissions in your browser and reload the tab"
+      );
+    };
+
+    const handleConnected = () => {
+      console.log('Room connected, setting up data channel listener');
+      setIsVoiceConnected(true);
+    };
+
+    const handleDisconnected = () => {
+      console.log('Room disconnected');
+      setIsVoiceConnected(false);
+    };
+
+    // Set up event listeners
+    room.on(RoomEvent.DataReceived, handleDataReceived);
+    room.on(RoomEvent.MediaDevicesError, handleMediaDevicesError);
+    room.on(RoomEvent.Connected, handleConnected);
+    room.on(RoomEvent.Disconnected, handleDisconnected);
 
     return () => {
-      room.off(RoomEvent.MediaDevicesError, onDeviceFailure);
-      room.off(RoomEvent.Connected, () => setIsVoiceConnected(true));
-      room.off(RoomEvent.Disconnected, () => setIsVoiceConnected(false));
+      room.off(RoomEvent.DataReceived, handleDataReceived);
+      room.off(RoomEvent.MediaDevicesError, handleMediaDevicesError);
+      room.off(RoomEvent.Connected, handleConnected);
+      room.off(RoomEvent.Disconnected, handleDisconnected);
     };
-  }, [room]);
+  }, [room, handleAgentSearchRequest]);
 
   return (
     <div data-lk-theme="default" className="min-h-screen bg-background">
       <RoomContext.Provider value={room}>
+        {/* Header */}
+        <Header />
+        
         {/* Main Content - Mobile First Responsive Layout */}
         <main className="container mx-auto px-4 py-6 space-y-6 max-w-7xl">
-          {/* Hero Section */}
-          <HeroSection />
           
           {/* Upload Panel - Always at top */}
           <section aria-labelledby="upload-section">
@@ -167,6 +224,7 @@ export default function Page() {
           
           {/* Responsive Layout Container */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 xl:gap-8">
+            
             {/* Voice Search Panel - Primary CTA */}
             <section 
               aria-labelledby="voice-section"
@@ -429,10 +487,3 @@ function FloatingVoiceButton() {
     </motion.div>
   );
 }
-function onDeviceFailure(error: Error) {
-  console.error(error);
-  alert(
-    "Error acquiring camera or microphone permissions. Please make sure you grant the necessary permissions in your browser and reload the tab"
-  );
-}
-

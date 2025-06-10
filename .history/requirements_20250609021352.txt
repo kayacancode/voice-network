@@ -1,0 +1,16 @@
+# Core LiveKit and agent dependencies
+livekit-agents
+livekit-plugins-openai
+
+# OpenAI and Pinecone for AI/ML functionality
+openai>=1.40.0
+pinecone-client
+
+# HTTP client for API requests
+aiohttp>=3.8.0
+
+# Environment management
+python-dotenv
+
+# Additional dependencies that might be needed
+requests>=2.31.0 
