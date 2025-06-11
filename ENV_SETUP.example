@@ -1,0 +1,14 @@
+# LiveKit Configuration
+LIVEKIT_API_KEY=your_livekit_api_key_here
+LIVEKIT_API_SECRET=your_livekit_api_secret_here
+LIVEKIT_URL=wss://your-livekit-server.livekit.cloud
+
+# OpenAI Configuration
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Pinecone Configuration
+PINECONE_API_KEY=your_pinecone_api_key_here
+PINECONE_INDEX_NAME=ai-network
+
+# Next.js Configuration
+NEXT_PUBLIC_CONN_DETAILS_ENDPOINT=/api/connection-details 

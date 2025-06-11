@@ -36,7 +36,7 @@ function getRandomMemoji() {
   return memojiImages[Math.floor(Math.random() * memojiImages.length)];
 }
 
-function getRandomStart(max: number, margin: number = 100) {
+function getRandomStart(max: number, margin: number = 50) {
   return margin + Math.random() * (max - margin * 2);
 }
 
@@ -104,14 +104,16 @@ export function HeroSection() {
       {/* Floating Memojis */}
       <div ref={containerRef} className="absolute inset-0 pointer-events-none">
         {[...Array(6)].map((_, i) => {
-          // Pick a random start position for each bubble
-          const startX = getRandomStart(viewport.width);
-          const startY = getRandomStart(viewport.height);
-          const driftX = (Math.random() > 0.5 ? 1 : -1) * (15 + Math.random() * 20); // 15-35px
-          const driftY = (Math.random() > 0.5 ? 1 : -1) * (20 + Math.random() * 30); // 20-50px
-          const rotateAmount = (Math.random() > 0.5 ? 1 : -1) * (3 + Math.random() * 3); // 3-6deg
-          const duration = 80 + Math.random() * 40; // 80-120 seconds per cycle
-          const delay = Math.random() * 50; // Stagger the start of each bubble up to 50s
+          // Pick a random start position for each bubble with better distribution
+          const gridX = (i % 3) * (viewport.width / 3) + getRandomStart(viewport.width / 3, 20);
+          const gridY = Math.floor(i / 3) * (viewport.height / 2) + getRandomStart(viewport.height / 2, 20);
+          const startX = Math.min(Math.max(gridX, 50), viewport.width - 50);
+          const startY = Math.min(Math.max(gridY, 50), viewport.height - 50);
+          const driftX = (Math.random() > 0.5 ? 1 : -1) * (30 + Math.random() * 40); // 30-70px movement
+          const driftY = (Math.random() > 0.5 ? 1 : -1) * (30 + Math.random() * 40); // 30-70px movement
+          const rotateAmount = (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random() * 3); // 2-5deg rotation
+          const duration = 15 + Math.random() * 10; // 15-25 seconds per cycle (much faster)
+          const delay = Math.random() * 5; // Stagger the start of each bubble up to 5s
           const memojiImg = assignedMemojiImages[i];
           
           return (
@@ -125,16 +127,16 @@ export function HeroSection() {
                 scale: 1,
               }}
               animate={{
-                x: [startX, startX + driftX, startX],
-                y: [startY, startY + driftY, startY],
-                rotate: [0, rotateAmount, 0],
-                scale: [1, 1.02, 1],
+                x: startX + driftX,
+                y: startY + driftY,
+                rotate: rotateAmount,
+                scale: 1.01,
               }}
               transition={{
                 duration,
                 repeat: Infinity,
-                ease: "easeInOut",
-                times: [0, 0.5, 1],
+                repeatType: "reverse",
+                ease: "linear",
                 delay,
               }}
               onUpdate={(latest: ResolvedValues) => {

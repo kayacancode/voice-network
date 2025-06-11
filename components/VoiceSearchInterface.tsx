@@ -1,12 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Mic, MicOff, Loader, Play, Square } from "lucide-react";
+import { Mic, MicOff, Loader, Play, Square, Pause } from "lucide-react";
 import { Contact } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { VoiceVisualizer } from "@/components/VoiceVisualizer";
-import { useVoiceAssistant } from "@livekit/components-react";
+import { useVoiceAssistant, DisconnectButton, useRoomContext } from "@livekit/components-react";
 
 interface VoiceSearchInterfaceProps {
   isConnected: boolean;
@@ -26,9 +26,33 @@ export function VoiceSearchInterface({
   currentTranscript = ""
 }: VoiceSearchInterfaceProps) {
   const { state: agentState } = useVoiceAssistant();
+  const room = useRoomContext();
   const isListening = agentState === "listening";
   const isSpeaking = agentState === "speaking";
   const isThinking = agentState === "thinking";
+
+  const handleMainButtonClick = async () => {
+    if (!isConnected) {
+      // Connect if not connected
+      onConnect();
+    } else if (isListening) {
+      // Stop listening by disabling microphone
+      if (room?.localParticipant) {
+        await room.localParticipant.setMicrophoneEnabled(false);
+        // Re-enable after a short delay to allow for new listening session
+        setTimeout(async () => {
+          if (room?.localParticipant) {
+            await room.localParticipant.setMicrophoneEnabled(true);
+          }
+        }, 500);
+      }
+    } else if (!isThinking && !isSpeaking) {
+      // Ready state - ensure microphone is enabled for listening
+      if (room?.localParticipant) {
+        await room.localParticipant.setMicrophoneEnabled(true);
+      }
+    }
+  };
 
   return (
     <Card className="w-full bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 border-blue-200 dark:border-blue-800">
@@ -63,7 +87,7 @@ export function VoiceSearchInterface({
           />
         </div>
 
-        {/* Large Voice Button */}
+        {/* Large Voice Button and Pause Button */}
         <div className="flex flex-col items-center space-y-4">
           {!isConnected ? (
             <motion.div
@@ -71,7 +95,7 @@ export function VoiceSearchInterface({
               whileTap={{ scale: 0.95 }}
             >
               <Button
-                onClick={onConnect}
+                onClick={handleMainButtonClick}
                 size="lg"
                 className="h-24 w-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg text-white border-0"
                 aria-label="Connect to voice assistant"
@@ -80,47 +104,69 @@ export function VoiceSearchInterface({
               </Button>
             </motion.div>
           ) : (
-            <motion.div
-              animate={{
-                scale: isListening ? [1, 1.1, 1] : 1,
-                boxShadow: isListening 
-                  ? ["0 0 0 0 rgba(59, 130, 246, 0.7)", "0 0 0 20px rgba(59, 130, 246, 0)", "0 0 0 0 rgba(59, 130, 246, 0)"]
-                  : "0 0 0 0 rgba(59, 130, 246, 0)"
-              }}
-              transition={{
-                duration: isListening ? 2 : 0.3,
-                repeat: isListening ? Infinity : 0,
-                ease: "easeInOut"
-              }}
-              className="relative"
-            >
-              <Button
-                size="lg"
-                disabled={isThinking || isSpeaking}
-                className={`h-24 w-24 rounded-full shadow-lg border-0 transition-all duration-300 ${
-                  isListening 
-                    ? "bg-red-500 hover:bg-red-600 text-white" 
-                    : isThinking || isSpeaking
-                    ? "bg-yellow-500 text-white cursor-not-allowed"
-                    : "bg-gradient-to-br from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
-                }`}
-                aria-label={
-                  isListening ? "Listening - speak now" :
-                  isThinking ? "Processing your request" :
-                  isSpeaking ? "AI assistant is speaking" :
-                  "Tap to speak"
-                }
-                aria-live="polite"
+            <div className="flex items-center gap-4">
+              {/* Main Voice Button */}
+              <motion.div
+                animate={{
+                  scale: isListening ? [1, 1.1, 1] : 1,
+                  boxShadow: isListening 
+                    ? ["0 0 0 0 rgba(59, 130, 246, 0.7)", "0 0 0 20px rgba(59, 130, 246, 0)", "0 0 0 0 rgba(59, 130, 246, 0)"]
+                    : "0 0 0 0 rgba(59, 130, 246, 0)"
+                }}
+                transition={{
+                  duration: isListening ? 2 : 0.3,
+                  repeat: isListening ? Infinity : 0,
+                  ease: "easeInOut"
+                }}
+                className="relative"
               >
-                {isListening ? (
-                  <Square className="w-8 h-8" />
-                ) : isThinking || isSpeaking ? (
-                  <Loader className="w-8 h-8 animate-spin" />
-                ) : (
-                  <Mic className="w-8 h-8" />
-                )}
-              </Button>
-            </motion.div>
+                <Button
+                  onClick={handleMainButtonClick}
+                  size="lg"
+                  disabled={isThinking || isSpeaking}
+                  className={`h-24 w-24 rounded-full shadow-lg border-0 transition-all duration-300 ${
+                    isListening 
+                      ? "bg-red-500 hover:bg-red-600 text-white" 
+                      : isThinking || isSpeaking
+                      ? "bg-yellow-500 text-white cursor-not-allowed"
+                      : "bg-gradient-to-br from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+                  }`}
+                  aria-label={
+                    isListening ? "Stop listening" :
+                    isThinking ? "Processing your request" :
+                    isSpeaking ? "AI assistant is speaking" :
+                    "Start listening"
+                  }
+                  aria-live="polite"
+                >
+                  {isListening ? (
+                    <Square className="w-8 h-8" />
+                  ) : isThinking || isSpeaking ? (
+                    <Loader className="w-8 h-8 animate-spin" />
+                  ) : (
+                    <Mic className="w-8 h-8" />
+                  )}
+                </Button>
+              </motion.div>
+
+              {/* Pause/Stop Button */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <DisconnectButton>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="h-16 w-16 rounded-full border-2 border-red-500 text-red-500 hover:bg-red-50 hover:border-red-600 hover:text-red-600 dark:border-red-400 dark:text-red-400 dark:hover:bg-red-950/20 shadow-lg transition-all duration-300"
+                    aria-label="Disconnect voice assistant"
+                  >
+                    <Pause className="w-6 h-6" />
+                  </Button>
+                </DisconnectButton>
+              </motion.div>
+            </div>
           )}
           
           {/* Status Text */}
@@ -134,11 +180,16 @@ export function VoiceSearchInterface({
             </p>
             <p className="text-sm text-muted-foreground max-w-xs">
               {!isConnected ? "Connect to start voice searching your network" :
-               isListening ? "Ask about your contacts - try 'Find designers'" :
+               isListening ? "Click the stop button or say your query" :
                isThinking ? "Analyzing your request and searching..." :
                isSpeaking ? "AI assistant is responding" :
                "Ready for your next question"}
             </p>
+            {isConnected && (
+              <p className="text-xs text-muted-foreground mt-2">
+                Use the pause button to fully disconnect the voice assistant
+              </p>
+            )}
           </div>
         </div>
 
