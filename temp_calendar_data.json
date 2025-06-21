@@ -1,0 +1,94 @@
+{
+  "events": [
+    {
+      "id": "_60q30c1g60o30e1i60o4ac1g60rj8gpl88rj2c1h84s34h9g60s30c1g60o30c1g6spj4g9o84rkad1h8h248ghg64o30c1g60o30c1g60o30c1g60o32c1g60o30c1g8h1k6hi28h134d9m64s46hhk690jagpj751j0ca275346h256510",
+      "summary": "CvD - Kaya / Nik",
+      "description": "\n",
+      "start": "2025-06-21T13:00:00-05:00",
+      "end": "2025-06-21T14:00:00-05:00",
+      "attendees": [
+        {
+          "email": "nrokop@stuart.iit.edu",
+          "displayName": "Nik Rokop",
+          "responseStatus": "accepted"
+        },
+        {
+          "email": "kayarjones901@gmail.com",
+          "displayName": "kayarjones901",
+          "responseStatus": "accepted"
+        }
+      ],
+      "location": "Corbett Vs Dempsey (2156 W Fulton St, Chicago, IL 60612, US)",
+      "status": "confirmed",
+      "created": "2025-06-20T01:57:03.000Z",
+      "updated": "2025-06-20T01:59:05.010Z"
+    },
+    {
+      "id": "6m63dc84gd2o28rnkaup1h7ais",
+      "summary": "Kaya check in ",
+      "description": "",
+      "start": "2025-06-24T13:00:00-05:00",
+      "end": "2025-06-24T13:45:00-05:00",
+      "attendees": [
+        {
+          "email": "kayarjones901@gmail.com",
+          "displayName": "kayarjones901",
+          "responseStatus": "accepted"
+        }
+      ],
+      "location": "",
+      "status": "confirmed",
+      "created": "2025-06-17T18:22:42.000Z",
+      "updated": "2025-06-17T18:29:24.513Z"
+    },
+    {
+      "id": "3ld9jtln31mr47p9ff43ihmldk",
+      "summary": "Dinner with Berit!",
+      "description": "",
+      "start": "2025-06-26T18:00:00-05:00",
+      "end": "2025-06-26T19:00:00-05:00",
+      "attendees": [],
+      "location": "",
+      "status": "confirmed",
+      "created": "2025-06-20T15:57:44.000Z",
+      "updated": "2025-06-20T15:57:45.175Z"
+    },
+    {
+      "id": "pm7j64nbj6gk86p7ub3o95db48",
+      "summary": "Kaya Jones Calendar (Jonathan Falkinburg)",
+      "description": "<b>Booked by</b>\nJonathan Falkinburg\nfalkinburg33@gmail.com",
+      "start": "2025-06-27T16:00:00-05:00",
+      "end": "2025-06-27T16:30:00-05:00",
+      "attendees": [
+        {
+          "email": "kayarjones901@gmail.com",
+          "displayName": "kayarjones901",
+          "responseStatus": "accepted"
+        },
+        {
+          "email": "falkinburg33@gmail.com",
+          "displayName": "falkinburg33",
+          "responseStatus": "accepted"
+        }
+      ],
+      "location": "",
+      "status": "confirmed",
+      "created": "2025-06-18T22:28:00.000Z",
+      "updated": "2025-06-18T22:28:01.170Z"
+    },
+    {
+      "id": "55odejnval248d869esj7fg6o5",
+      "summary": "57th National Convention",
+      "description": "From its inception, the National Convention has served as a foundation for the Sorority's growth and stability. While the format has changed over the years, it's purpose – to transact the business of Grand Chapter by sharing and providing guidance on the implementation of programs - is one of the many reasons Delta Sigma Theta has remained successful. As we move forward with fortitude into the next biennium, please consider joining us either in-person in Washington, DC or virtually from the destination of your choice.<br/>",
+      "start": "2025-07-08T08:00:00-05:00",
+      "end": "2025-07-13T16:00:00-05:00",
+      "attendees": [],
+      "location": "Walter E. Washington Convention Center, 801 Allen Y. Lew Place NW, Washington DC 20001",
+      "status": "confirmed",
+      "created": "2025-04-26T17:29:37.000Z",
+      "updated": "2025-04-26T17:29:37.661Z"
+    }
+  ],
+  "lastUpdated": "2025-06-21T14:42:37.664Z",
+  "authenticated": true
+}

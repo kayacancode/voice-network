@@ -88,19 +88,7 @@ export default function MemoryDemo() {
     }
   };
 
-  const sampleMemories = [
-    "I met Sarah today, she works at Google as a software engineer",
-    "Just talked to John Smith, he's a product manager at Microsoft",
-    "Maria from the conference is a UX designer at Apple",
-    "Met David at the networking event, he's the CEO of a startup called TechFlow"
-  ];
-
-  const sampleQueries = [
-    "Where does Sarah work?",
-    "What does John do?",
-    "Tell me about Maria",
-    "Who is the CEO?"
-  ];
+// Sample data removed - users should create their own memories and queries
 
   const speakText = (text: string) => {
     if ('speechSynthesis' in window) {
@@ -153,19 +141,16 @@ export default function MemoryDemo() {
               </Button>
             </div>
 
-            {/* Sample memories */}
+            {/* Instructions for users */}
             <div className="space-y-2">
-              <p className="text-sm font-medium text-gray-700">Try these examples:</p>
-              <div className="space-y-1">
-                {sampleMemories.map((memory, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCaptureText(memory)}
-                    className="text-xs text-left text-blue-600 hover:text-blue-800 p-2 bg-blue-50 rounded w-full transition-colors"
-                  >
-                    "{memory}"
-                  </button>
-                ))}
+              <p className="text-sm font-medium text-gray-700">Start creating your own memories:</p>
+              <div className="text-xs text-gray-600 p-3 bg-gray-50 rounded">
+                <p className="mb-2">Examples of what you can save:</p>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>"I met Sarah today, she works at Google as a software engineer"</li>
+                  <li>"John from the conference is a product manager at Microsoft"</li>
+                  <li>"Maria mentioned she's looking for new opportunities in UX design"</li>
+                </ul>
               </div>
             </div>
 
@@ -234,19 +219,17 @@ export default function MemoryDemo() {
               {isRecalling ? 'Searching...' : 'Search Memories'}
             </Button>
 
-            {/* Sample queries */}
+            {/* Instructions for queries */}
             <div className="space-y-2">
-              <p className="text-sm font-medium text-gray-700">Try these questions:</p>
-              <div className="space-y-1">
-                {sampleQueries.map((query, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setRecallQuery(query)}
-                    className="text-xs text-left text-blue-600 hover:text-blue-800 p-2 bg-blue-50 rounded w-full transition-colors"
-                  >
-                    "{query}"
-                  </button>
-                ))}
+              <p className="text-sm font-medium text-gray-700">Ask questions about your saved memories:</p>
+              <div className="text-xs text-gray-600 p-3 bg-gray-50 rounded">
+                <p className="mb-2">Example questions you can ask:</p>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>"Where does Sarah work?"</li>
+                  <li>"What does John do?"</li>
+                  <li>"Tell me about Maria"</li>
+                  <li>"Who is looking for new opportunities?"</li>
+                </ul>
               </div>
             </div>
 

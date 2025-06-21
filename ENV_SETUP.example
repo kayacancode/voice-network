@@ -1,14 +1,22 @@
 # LiveKit Configuration
-LIVEKIT_API_KEY=your_livekit_api_key_here
-LIVEKIT_API_SECRET=your_livekit_api_secret_here
-LIVEKIT_URL=wss://your-livekit-server.livekit.cloud
+LIVEKIT_API_KEY=your_livekit_api_key
+LIVEKIT_API_SECRET=your_livekit_api_secret
+LIVEKIT_URL=your_livekit_url
 
 # OpenAI Configuration
-OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_API_KEY=your_openai_api_key
 
 # Pinecone Configuration
-PINECONE_API_KEY=your_pinecone_api_key_here
+PINECONE_API_KEY=your_pinecone_api_key
 PINECONE_INDEX_NAME=ai-network
 
-# Next.js Configuration
+# Google Calendar Integration
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+
+# NextAuth Configuration
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your_nextauth_secret
+
+# Connection Details Endpoint
 NEXT_PUBLIC_CONN_DETAILS_ENDPOINT=/api/connection-details 

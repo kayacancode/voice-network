@@ -4,7 +4,12 @@ livekit-plugins-openai
 
 # OpenAI and Pinecone for AI/ML functionality
 openai>=1.40.0
-pinecone-client
+pinecone>=5.0.0
+
+# Google Calendar API integration
+google-api-python-client>=2.100.0
+google-auth-httplib2>=0.1.1
+google-auth-oauthlib>=1.0.0
 
 # HTTP client for API requests
 aiohttp>=3.8.0

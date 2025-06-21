@@ -10,9 +10,10 @@ This application combines a Next.js frontend with a LiveKit Python agent backend
 
 ## Features
 
-- 🎤 **Voice Interface**: Speak naturally to search your contacts
+- 🎤 **Voice Interface**: Speak naturally to search your contacts and manage calendar
 - 📊 **Data Upload**: Import LinkedIn contacts (CSV) and Instagram followers (JSON)
 - 🔍 **Semantic Search**: Find people by name, title, company, location, skills, or industry
+- 📅 **Google Calendar Integration**: Ask about meetings, schedule, and attendees using voice
 - 🧠 **AI Agent**: Powered by OpenAI GPT-4o for natural conversation flow
 - 🎯 **Real-time Results**: Stream live search results back to the UI
 - 💬 **Follow-up Questions**: Continue the conversation with additional queries
@@ -123,11 +124,18 @@ Once both services are running and your data is uploaded:
 
 ### Example Voice Queries
 
+**Network Search:**
 - **By Role**: "Find product managers", "Show me designers"
 - **By Company**: "Who do I know at Microsoft?", "People working at startups"
 - **By Location**: "Contacts in New York", "Anyone in the Bay Area?"
 - **By Skills**: "Find someone who knows React", "People with AI experience"
 - **General**: "Who's in my network?", "Show me recent connections"
+
+**Calendar Queries:**
+- **Next Meeting**: "Who am I meeting with next?", "What's my next meeting?"
+- **Daily Schedule**: "What's my schedule today?", "Show me today's meetings"
+- **Person-specific**: "When am I meeting with Sarah?", "Do I have meetings with John?"
+- **Weekly Overview**: "What's coming up this week?", "Show me upcoming meetings"
 
 ## Troubleshooting
 
@@ -169,3 +177,4 @@ This template is open source and we welcome contributions! Please open a PR or i
 - **[LiveKit](https://livekit.io/)**: Real-time voice communication
 - **[OpenAI](https://openai.com/)**: GPT-4o for conversations, text-embedding-3-small for search
 - **[Pinecone](https://www.pinecone.io/)**: Vector database for semantic search
+- **[Google Calendar API](https://developers.google.com/calendar)**: Meeting and schedule management

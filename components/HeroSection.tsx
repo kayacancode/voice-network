@@ -2,200 +2,147 @@ import { motion, useMotionValue, useTransform, ResolvedValues } from 'framer-mot
 import { useEffect, useState, useRef } from 'react';
 
 const exampleQueries = [
-  "Anyone hiring?",
-  "Who's single?",
-  "Going to NYC who lives there?",
-  "Looking for a roommate",
-  "Who's into hiking?",
-  "Need a tennis partner",
-  "Who works in tech?",
-  "Looking for a mentor",
-];
-const driftX = (Math.random() - 0.5) * 20;   // between -10px and +10px
-const driftY = (Math.random() - 0.5) * 20;   // between -10px and +10px
-const rotateAmount = (Math.random() - 0.5) * 2; // between -1° and +1°
-const duration    = 150 + Math.random() * 100; // 150–250 seconds
-const delay       = Math.random() * 60;        // up to 60s stagger
-
-const memojiImages = [
-  "/memojis/emoji1.png",
-  "/memojis/emoji2.png",
-  "/memojis/emoji3.png",
-  "/memojis/emoji4.png",
-  "/memojis/emoji5.png",
-  "/memojis/emoji6.png",
+  "Who's into rock climbing?",
+  "Find software engineers in Austin",
+  "Show me book club members", 
+  "Connect me with VCs in Silicon Valley",
+  "Find dog owners in my area",
+  "Who's hiring product managers?",
+  "Show me startup founders nearby",
+  "Find hiking buddies",
 ];
 
-interface MemojiPosition {
-  x: number;
-  y: number;
-  id: number;
-}
+const fadeInUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }
+};
 
-function getRandomMemoji() {
-  return memojiImages[Math.floor(Math.random() * memojiImages.length)];
-}
-
-function getRandomStart(max: number, margin: number = 50) {
-  return margin + Math.random() * (max - margin * 2);
-}
+const staggerContainer = {
+  animate: {
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
 
 export function HeroSection() {
   const [currentQueryIndex, setCurrentQueryIndex] = useState(0);
-  const [memojiPositions, setMemojiPositions] = useState<MemojiPosition[]>([]);
-  const [assignedMemojiImages] = useState(() =>
-    Array.from({ length: 6 }, () => getRandomMemoji())
-  );
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    setIsVisible(true);
     const interval = setInterval(() => {
       setCurrentQueryIndex((prev) => (prev + 1) % exampleQueries.length);
-    }, 3000);
+    }, 3500);
     return () => clearInterval(interval);
   }, []);
 
-  // Get viewport size for initial positions
-  const [viewport, setViewport] = useState({ width: 1200, height: 800 });
-  useEffect(() => {
-    function update() {
-      setViewport({ width: window.innerWidth, height: window.innerHeight });
-    }
-    update();
-    window.addEventListener('resize', update);
-    return () => window.removeEventListener('resize', update);
-  }, []);
-
-  const updateMemojiPosition = (id: number, x: number, y: number) => {
-    setMemojiPositions(prev => {
-      const newPositions = [...prev];
-      const index = newPositions.findIndex(pos => pos.id === id);
-      if (index !== -1) {
-        newPositions[index] = { x, y, id };
-      } else {
-        newPositions.push({ x, y, id });
-      }
-      return newPositions;
-    });
-  };
-
   return (
-    <div className="relative min-h-[85vh] bg-white flex flex-col items-center justify-center overflow-hidden">
-      {/* SVG Container for connecting lines */}
-      <svg className="absolute inset-0 w-full h-full pointer-events-none">
-        {memojiPositions.map((pos1, i) => 
-          memojiPositions.slice(i + 1).map((pos2, j) => (
-            <motion.line
-              key={`${pos1.id}-${pos2.id}`}
-              x1={pos1.x}
-              y1={pos1.y}
-              x2={pos2.x}
-              y2={pos2.y}
-              stroke="rgba(0, 122, 255, 0.08)"
-              strokeWidth="1"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 2 }}
-            />
-          ))
-        )}
-      </svg>
-      
-      {/* Floating Memojis */}
-      <div ref={containerRef} className="absolute inset-0 pointer-events-none">
-        {[...Array(6)].map((_, i) => {
-          // Pick a random start position for each bubble with better distribution
-          const gridX = (i % 3) * (viewport.width / 3) + getRandomStart(viewport.width / 3, 20);
-          const gridY = Math.floor(i / 3) * (viewport.height / 2) + getRandomStart(viewport.height / 2, 20);
-          const startX = Math.min(Math.max(gridX, 50), viewport.width - 50);
-          const startY = Math.min(Math.max(gridY, 50), viewport.height - 50);
-          const driftX = (Math.random() > 0.5 ? 1 : -1) * (30 + Math.random() * 40); // 30-70px movement
-          const driftY = (Math.random() > 0.5 ? 1 : -1) * (30 + Math.random() * 40); // 30-70px movement
-          const rotateAmount = (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random() * 3); // 2-5deg rotation
-          const duration = 15 + Math.random() * 10; // 15-25 seconds per cycle (much faster)
-          const delay = Math.random() * 5; // Stagger the start of each bubble up to 5s
-          const memojiImg = assignedMemojiImages[i];
-          
-          return (
-            <motion.div
-              key={i}
-              className="absolute w-20 h-20 rounded-full"
-              initial={{
-                x: startX,
-                y: startY,
-                rotate: 0,
-                scale: 1,
-              }}
-              animate={{
-                x: startX + driftX,
-                y: startY + driftY,
-                rotate: rotateAmount,
-                scale: 1.01,
-              }}
-              transition={{
-                duration,
-                repeat: Infinity,
-                repeatType: "reverse",
-                ease: "linear",
-                delay,
-              }}
-              onUpdate={(latest: ResolvedValues) => {
-                if (containerRef.current) {
-                  const rect = containerRef.current.getBoundingClientRect();
-                  updateMemojiPosition(
-                    i,
-                    Number(latest.x) + rect.left + 40,
-                    Number(latest.y) + rect.top + 40
-                  );
-                }
-              }}
-            >
-              <div className="w-full h-full rounded-full bg-gradient-to-br from-blue-50 to-blue-100 shadow-sm flex items-center justify-center backdrop-blur-sm overflow-hidden">
-                <img
-                  src={memojiImg}
-                  alt={`Memoji ${i + 1}`}
-                  className="w-full h-full object-contain"
-                  draggable={false}
-                />
-              </div>
-            </motion.div>
-          );
-        })}
+    <div className="relative min-h-screen bg-gradient-hero flex flex-col items-center justify-center overflow-hidden">
+      {/* Ambient background effects */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/3 -left-40 w-96 h-96 bg-accent/3 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/3 w-64 h-64 bg-primary/4 rounded-full blur-3xl"></div>
       </div>
+
+      {/* Grid pattern overlay */}
+      <div 
+        className="absolute inset-0 opacity-20"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='currentColor' fill-opacity='0.02'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+        }}
+      ></div>
 
       {/* Main Content */}
-      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className="text-4xl md:text-6xl font-medium text-gray-900 mb-6 tracking-tight"
-        >
-          Your network,<br />
-          <span className="text-blue-600">now voice-enabled</span>
-        </motion.h1>
-
-        {/* Example Queries Slider */}
-        <motion.div
-          key={currentQueryIndex}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.4, ease: "easeInOut" }}
-          className="text-lg md:text-xl text-gray-500 mt-8 font-normal"
-        >
-          <span className="text-gray-400">Try asking: </span>
-          <span className="text-gray-700">{exampleQueries[currentQueryIndex]}</span>
+      <motion.div 
+        className="relative z-10 text-center px-4 max-w-5xl mx-auto pt-24 md:pt-28"
+        variants={staggerContainer}
+        initial="initial"
+        animate={isVisible ? "animate" : "initial"}
+      >
+        {/* Badge */}
+        <motion.div variants={fadeInUp}>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/8 border border-primary/15 text-primary text-sm font-medium mb-8 backdrop-blur-sm">
+            <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+            Voice-enabled network search
+          </div>
         </motion.div>
 
-        {/* Subtle decorative line */}
-        <motion.div
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: 1, delay: 0.5 }}
-          className="w-16 h-0.5 bg-gray-100 mx-auto mt-10"
-        />
-      </div>
+        {/* Main Headline */}
+        <motion.h1
+          variants={fadeInUp}
+          className="text-5xl md:text-7xl lg:text-8xl font-bold text-foreground mb-6 tracking-tight leading-none"
+        >
+          Your network,
+          <br />
+          <span className="bg-gradient-to-r from-primary via-primary/80 to-accent bg-clip-text text-transparent">
+            voice-powered
+          </span>
+        </motion.h1>
+
+        {/* Subtitle */}
+        <motion.p
+          variants={fadeInUp}
+          className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed font-light"
+        >
+          Search your personal and professional networks using natural voice commands. 
+          Find friends, colleagues, and connections instantly with AI-powered insights.
+        </motion.p>
+
+        {/* Example Queries */}
+        <motion.div variants={fadeInUp} className="mb-16">
+          <p className="text-muted-foreground mb-4 text-lg font-medium">Try asking:</p>
+          <div className="relative h-8 flex items-center justify-center">
+            <motion.span
+              key={currentQueryIndex}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.4, ease: "easeInOut" }}
+              className="absolute text-xl md:text-2xl font-medium bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent"
+            >
+              &quot;{exampleQueries[currentQueryIndex]}&quot;
+            </motion.span>
+          </div>
+        </motion.div>
+
+        {/* CTA Buttons */}
+        <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+          <button className="group relative px-8 py-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-semibold text-lg transition-all duration-200 shadow-premium hover:shadow-premium-lg transform hover:-translate-y-0.5">
+            <span className="relative z-10">Start Voice Search</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+          </button>
+          
+          <button className="px-8 py-4 bg-card/60 hover:bg-card/80 text-foreground border border-border hover:border-primary/30 rounded-xl font-semibold text-lg transition-all duration-200 backdrop-blur-sm shadow-sm hover:shadow-md">
+            Upload Your Contacts
+          </button>
+        </motion.div>
+
+        {/* Feature Pills */}
+        <motion.div variants={fadeInUp} className="flex flex-wrap gap-3 justify-center items-center">
+          {[
+            "Voice Recognition",
+            "AI-Powered Search",
+            "Multi-Platform Support", 
+            "Real-time Results"
+          ].map((feature, index) => (
+            <motion.div
+              key={feature}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 1 + index * 0.1, duration: 0.4 }}
+              className="px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-sm font-medium text-muted-foreground border border-border/40 shadow-sm"
+            >
+              {feature}
+            </motion.div>
+          ))}
+        </motion.div>
+      </motion.div>
+
+      {/* Bottom fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent pointer-events-none"></div>
     </div>
   );
 } 

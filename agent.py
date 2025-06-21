@@ -17,6 +17,9 @@ from livekit.plugins import openai as lk_openai, noise_cancellation
 from pinecone import Pinecone
 import openai as openai_client
 
+# Import the calendar service
+from calendar_service import calendar_service
+
 # Load your .env.local with PINECONE_API_KEY, PINECONE_INDEX_NAME, OPENAI_API_KEY
 load_dotenv('.env.local')
 
@@ -339,6 +342,256 @@ class ContactSearchAssistant(Agent):
         else:
             return result.get('message', "I don't have any memories that match your query.")
 
+    @function_tool(
+        name="get_calendar_briefing",
+        description=(
+            "Get briefing information about your next meeting or a specific person. "
+            "Use this when the user asks 'Who am I meeting next?', 'What's my next meeting?', "
+            "or 'Brief me on [person's name]'. This provides context, background, and talking points."
+        )
+    )
+    async def _get_calendar_briefing_tool(
+        self, context: RunContext, query: str = ""
+    ) -> str:
+        # For now, redirect calendar briefing to the basic calendar functions since the briefing API uses mock data
+        if "next meeting" in query.lower() or "who am i meeting" in query.lower():
+            return await self._find_next_meeting_tool(context)
+        elif "today" in query.lower() or "schedule" in query.lower():
+            return await self._get_todays_schedule_tool(context)
+        elif "coming up" in query.lower() or "upcoming" in query.lower():
+            return await self._get_upcoming_events_tool(context)
+        else:
+            # For person-specific briefing, use the basic calendar search for now
+            return "Calendar briefing is now using your real Google Calendar data. Try asking 'What's my next meeting?' or 'What's my schedule today?' to see your actual calendar events."
+
+    @function_tool(
+        name="find_next_meeting",
+        description=(
+            "Find your next upcoming meeting. "
+            "Use this when the user asks 'Who am I meeting with next?', 'What's my next meeting?', "
+            "or 'When is my next meeting?'"
+        )
+    )
+    async def _find_next_meeting_tool(
+        self, context: RunContext
+    ) -> str:
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(
+                    'http://localhost:3000/api/calendar/sync'
+                ) as response:
+                    if response.status == 200:
+                        result = await response.json()
+                        events = result.get('events', [])
+                        
+                        if not events:
+                            return "You don't have any upcoming meetings scheduled."
+                        
+                        # Find the next meeting (first event since they're ordered by time)
+                        next_meeting = events[0]
+                        
+                        # Format for voice response
+                        summary = next_meeting.get('summary', 'Meeting')
+                        start_time = next_meeting.get('start', '')
+                        attendees = next_meeting.get('attendees', [])
+                        location = next_meeting.get('location', '')
+                        
+                        response_parts = [f"Your next meeting is '{summary}'"]
+                        if start_time:
+                            response_parts.append(f"starting {start_time}")
+                        if attendees:
+                            attendee_names = [att.get('displayName', att.get('email', '')) for att in attendees[:3]]
+                            if attendee_names:
+                                response_parts.append(f"with {', '.join(attendee_names)}")
+                        if location:
+                            response_parts.append(f"at {location}")
+                        
+                        return " ".join(response_parts) + "."
+                    else:
+                        return "I'm having trouble accessing your calendar. Please make sure you're connected to Google Calendar in the web interface."
+                        
+        except Exception as e:
+            print(f"Error finding next meeting: {e}")
+            return "I'm having trouble accessing your calendar right now. Please make sure you're connected to Google Calendar in the web interface."
+
+    @function_tool(
+        name="get_todays_schedule",
+        description=(
+            "Get all meetings scheduled for today. "
+            "Use this when the user asks 'What's my schedule today?', 'What meetings do I have today?', "
+            "or 'Show me today's meetings'"
+        )
+    )
+    async def _get_todays_schedule_tool(
+        self, context: RunContext
+    ) -> str:
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(
+                    'http://localhost:3000/api/calendar/sync'
+                ) as response:
+                    if response.status == 200:
+                        result = await response.json()
+                        events = result.get('events', [])
+                        
+                        if not events:
+                            return "You don't have any meetings scheduled for today."
+                        
+                        # Filter for today's events
+                        from datetime import datetime, date
+                        today = date.today()
+                        today_events = []
+                        
+                        for event in events:
+                            start_time = event.get('start', '')
+                            if start_time:
+                                try:
+                                    if 'T' in start_time:
+                                        event_date = datetime.fromisoformat(start_time.replace('Z', '+00:00')).date()
+                                    else:
+                                        event_date = datetime.fromisoformat(start_time).date()
+                                    
+                                    if event_date == today:
+                                        today_events.append(event)
+                                except:
+                                    continue
+                        
+                        if not today_events:
+                            return "You don't have any meetings scheduled for today."
+                        
+                        if len(today_events) == 1:
+                            event = today_events[0]
+                            return f"You have one meeting today: '{event.get('summary', 'Meeting')}' with {', '.join([att.get('displayName', att.get('email', '')) for att in event.get('attendees', [])[:3]])}"
+                        
+                        response = f"You have {len(today_events)} meetings today. "
+                        for i, event in enumerate(today_events[:3], 1):
+                            summary = event.get('summary', 'Meeting')
+                            attendees = event.get('attendees', [])
+                            attendee_names = [att.get('displayName', att.get('email', '')) for att in attendees[:2]]
+                            attendee_str = f" with {', '.join(attendee_names)}" if attendee_names else ""
+                            response += f"{i}. '{summary}'{attendee_str}. "
+                        
+                        if len(today_events) > 3:
+                            response += f"And {len(today_events) - 3} more meetings."
+                        
+                        return response
+                    else:
+                        return "I'm having trouble accessing your calendar. Please make sure you're connected to Google Calendar in the web interface."
+            
+        except Exception as e:
+            print(f"Error getting today's schedule: {e}")
+            return "I'm having trouble accessing your calendar right now. Please make sure you're connected to Google Calendar in the web interface."
+
+    @function_tool(
+        name="search_meetings_by_person",
+        description=(
+            "Search for meetings with a specific person. "
+            "Use this when the user asks 'When am I meeting with John?', 'Do I have meetings with Sarah?', "
+            "or 'Find my meetings with [person name]'"
+        )
+    )
+    async def _search_meetings_by_person_tool(
+        self, context: RunContext, person_name: str
+    ) -> str:
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(
+                    'http://localhost:3000/api/calendar/sync'
+                ) as response:
+                    if response.status == 200:
+                        result = await response.json()
+                        events = result.get('events', [])
+                        
+                        # Filter events by person name
+                        matching_events = []
+                        person_name_lower = person_name.lower()
+                        
+                        for event in events:
+                            # Check attendees and organizer
+                            attendees = event.get('attendees', [])
+                            for attendee in attendees:
+                                display_name = attendee.get('displayName', '').lower()
+                                email = attendee.get('email', '').lower()
+                                if person_name_lower in display_name or person_name_lower in email:
+                                    matching_events.append(event)
+                                    break
+                        
+                        if not matching_events:
+                            return f"I couldn't find any upcoming meetings with {person_name}."
+                        
+                        if len(matching_events) == 1:
+                            event = matching_events[0]
+                            summary = event.get('summary', 'Meeting')
+                            start_time = event.get('start', '')
+                            return f"I found one meeting with {person_name}: '{summary}' at {start_time}"
+                        
+                        response = f"I found {len(matching_events)} meetings with {person_name}. "
+                        for i, event in enumerate(matching_events[:2], 1):  # Limit to first 2 for voice
+                            summary = event.get('summary', 'Meeting')
+                            start_time = event.get('start', '')
+                            response += f"{i}. '{summary}' at {start_time}. "
+                        
+                        if len(matching_events) > 2:
+                            response += f"And {len(matching_events) - 2} more meetings."
+                        
+                        return response
+                    else:
+                        return "I'm having trouble accessing your calendar. Please make sure you're connected to Google Calendar in the web interface."
+            
+        except Exception as e:
+            print(f"Error searching meetings by person: {e}")
+            return "I'm having trouble accessing your calendar right now. Please make sure you're connected to Google Calendar in the web interface."
+
+    @function_tool(
+        name="get_upcoming_events",
+        description=(
+            "Get a summary of upcoming calendar events. "
+            "Use this when the user asks 'What's coming up?', 'Show me my upcoming meetings', "
+            "or 'What do I have this week?'"
+        )
+    )
+    async def _get_upcoming_events_tool(
+        self, context: RunContext, days_ahead: int = 7
+    ) -> str:
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(
+                    'http://localhost:3000/api/calendar/sync'
+                ) as response:
+                    if response.status == 200:
+                        result = await response.json()
+                        events = result.get('events', [])
+                        
+                        if not events:
+                            return f"You don't have any meetings scheduled for the next {days_ahead} days."
+                        
+                        if len(events) == 1:
+                            event = events[0]
+                            summary = event.get('summary', 'Meeting')
+                            attendees = event.get('attendees', [])
+                            attendee_names = [att.get('displayName', att.get('email', '')) for att in attendees[:2]]
+                            attendee_str = f" with {', '.join(attendee_names)}" if attendee_names else ""
+                            return f"You have one upcoming meeting: '{summary}'{attendee_str}"
+                        
+                        response = f"You have {len(events)} meetings coming up. "
+                        for i, event in enumerate(events[:3], 1):  # Limit to first 3 for voice
+                            summary = event.get('summary', 'Meeting')
+                            attendees = event.get('attendees', [])
+                            attendee_names = [att.get('displayName', att.get('email', '')) for att in attendees[:2]]
+                            attendee_str = f" with {', '.join(attendee_names)}" if attendee_names else ""
+                            response += f"{i}. '{summary}'{attendee_str}. "
+                        
+                        if len(events) > 3:
+                            response += f"And {len(events) - 3} more meetings."
+                        
+                        return response
+                    else:
+                        return "I'm having trouble accessing your calendar. Please make sure you're connected to Google Calendar in the web interface."
+            
+        except Exception as e:
+            print(f"Error getting upcoming events: {e}")
+            return "I'm having trouble accessing your calendar right now. Please make sure you're connected to Google Calendar in the web interface."
+
 
 async def entrypoint(ctx: agents.JobContext):
     assistant = ContactSearchAssistant()
@@ -360,9 +613,10 @@ async def entrypoint(ctx: agents.JobContext):
     # Kick things off with a greeting
     await session.generate_reply(
         instructions=(
-            "Hi! I can help you search your professional network and capture memories about people you meet. "
-            "Try saying things like: 'Find designers at Google', 'I met Sarah today, she works at Google', "
-            "or 'Where does Sarah work?' to recall memories."
+            "Hi! I'm QuickBrief, your voice AI assistant for professional networking and calendar management. "
+            "I can help you search your network, manage your calendar, get meeting briefings, and capture memories. "
+            "Try saying: 'Who am I meeting next?', 'What's my schedule today?', 'Find designers at Google', "
+            "'When am I meeting with John?', 'I met Sarah today', or 'Brief me on Sarah Chen' for instant context."
         )
     )
 

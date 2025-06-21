@@ -2,7 +2,7 @@ import useCombinedTranscriptions from "@/hooks/useCombinedTranscriptions";
 import * as React from "react";
 
 interface TranscriptionViewProps {
-  onVoiceQuery?: (transcript: string) => void;
+  onVoiceQuery?: (transcript: string, agentResponse?: string) => void;
   onTranscriptUpdate?: (transcript: string) => void;
 }
 
@@ -18,7 +18,7 @@ export default function TranscriptionView({ onVoiceQuery, onTranscriptUpdate }: 
     }
   }, [combinedTranscriptions]);
 
-  // Process user voice input for search queries
+  // Process user voice input for search queries and agent responses
   React.useEffect(() => {
     if (!onVoiceQuery) return;
 
@@ -26,8 +26,13 @@ export default function TranscriptionView({ onVoiceQuery, onTranscriptUpdate }: 
       segment => segment.role === "user" && segment.text.trim().length > 0
     );
 
+    const agentTranscriptions = combinedTranscriptions.filter(
+      segment => segment.role === "assistant" && segment.text.trim().length > 0
+    );
+
     if (userTranscriptions.length > 0) {
       const latestUser = userTranscriptions[userTranscriptions.length - 1];
+      const latestAgent = agentTranscriptions.length > 0 ? agentTranscriptions[agentTranscriptions.length - 1] : null;
       
       // Only process if this is a new transcription
       if (latestUser.text !== lastProcessedRef.current && latestUser.text.trim().length > 5) {
@@ -35,7 +40,9 @@ export default function TranscriptionView({ onVoiceQuery, onTranscriptUpdate }: 
         
         // Use setTimeout to avoid setState during render
         setTimeout(() => {
-          onVoiceQuery(latestUser.text);
+          // Pass both user transcript and agent response if available
+          const agentResponse = latestAgent?.text || undefined;
+          onVoiceQuery(latestUser.text, agentResponse);
         }, 0);
       }
     }

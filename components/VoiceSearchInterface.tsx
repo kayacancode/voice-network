@@ -15,6 +15,8 @@ interface VoiceSearchInterfaceProps {
   searchResults: Contact[];
   onConnect: () => void;
   currentTranscript?: string;
+  assistantResponse?: string;
+  responseType?: 'search' | 'memory' | 'general' | 'relationship' | 'briefing';
 }
 
 export function VoiceSearchInterface({ 
@@ -23,7 +25,9 @@ export function VoiceSearchInterface({
   currentQuery, 
   searchResults, 
   onConnect,
-  currentTranscript = ""
+  currentTranscript = "",
+  assistantResponse = "",
+  responseType = 'general'
 }: VoiceSearchInterfaceProps) {
   const { state: agentState } = useVoiceAssistant();
   const room = useRoomContext();
@@ -55,7 +59,7 @@ export function VoiceSearchInterface({
   };
 
   return (
-    <Card className="w-full bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 border-blue-200 dark:border-blue-800">
+    <Card className="w-full bg-white/80 border border-border/40 shadow-premium">
       <CardContent className="p-6 space-y-6">
         
         {/* LiveKit Status Indicator */}
@@ -65,8 +69,8 @@ export function VoiceSearchInterface({
             animate={{ scale: 1, opacity: 1 }}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${
               isConnected 
-                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" 
-                : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+                ? "bg-green-100 text-green-700 border border-green-200" 
+                : "bg-gray-100 text-gray-600 border border-gray-200"
             }`}
           >
             <div 
@@ -159,7 +163,7 @@ export function VoiceSearchInterface({
                   <Button
                     size="lg"
                     variant="outline"
-                    className="h-16 w-16 rounded-full border-2 border-red-500 text-red-500 hover:bg-red-50 hover:border-red-600 hover:text-red-600 dark:border-red-400 dark:text-red-400 dark:hover:bg-red-950/20 shadow-lg transition-all duration-300"
+                    className="h-16 w-16 rounded-full border-2 border-red-500 text-red-500 hover:bg-red-50 hover:border-red-600 hover:text-red-600 bg-white shadow-lg transition-all duration-300"
                     aria-label="Disconnect voice assistant"
                   >
                     <Pause className="w-6 h-6" />
@@ -198,7 +202,7 @@ export function VoiceSearchInterface({
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white/50 dark:bg-gray-900/50 rounded-lg p-4 min-h-[60px] border"
+            className="bg-white/80 rounded-lg p-4 min-h-[60px] border border-border/30"
           >
             <div className="text-sm text-muted-foreground mb-2">Live Transcription:</div>
             <div 
@@ -237,15 +241,15 @@ export function VoiceSearchInterface({
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4"
+            className="bg-blue-50 border border-blue-200 rounded-lg p-4"
           >
             <div className="flex items-center gap-3">
               <Loader className="w-5 h-5 text-blue-500 animate-spin" />
               <div>
-                <div className="font-medium text-blue-700 dark:text-blue-300">
+                <div className="font-medium text-blue-700">
                   Searching your network...
                 </div>
-                <div className="text-sm text-blue-600 dark:text-blue-400">
+                <div className="text-sm text-blue-600">
                   Looking through your contacts for relevant matches
                 </div>
               </div>
@@ -253,22 +257,82 @@ export function VoiceSearchInterface({
           </motion.div>
         )}
 
-        {/* Quick Results Summary */}
-        {searchResults.length > 0 && !isSearching && (
+        {/* Assistant Response */}
+        {assistantResponse && !isSearching && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-4"
+            className={`rounded-lg p-4 ${
+              responseType === 'search' && searchResults.length > 0
+                ? "bg-green-50 border border-green-200"
+                : responseType === 'memory'
+                ? "bg-blue-50 border border-blue-200"
+                : responseType === 'relationship'
+                ? "bg-orange-50 border border-orange-200"
+                : responseType === 'briefing'
+                ? "bg-indigo-50 border border-indigo-200"
+                : "bg-purple-50 border border-purple-200"
+            }`}
+          >
+            <div className="space-y-3">
+              <div className={`font-medium ${
+                responseType === 'search' && searchResults.length > 0
+                  ? "text-green-700"
+                  : responseType === 'memory'
+                  ? "text-blue-700"
+                  : responseType === 'relationship'
+                  ? "text-orange-700"
+                  : responseType === 'briefing'
+                  ? "text-indigo-700"
+                  : "text-purple-700"
+              }`}>
+                {responseType === 'relationship' ? 'Relationship Intelligence' : 
+                 responseType === 'briefing' ? 'Meeting Briefing' : 
+                 'AI Assistant Response'}
+              </div>
+              <div className={`text-sm leading-relaxed ${
+                responseType === 'search' && searchResults.length > 0
+                  ? "text-green-700"
+                  : responseType === 'memory'
+                  ? "text-blue-700"
+                  : responseType === 'relationship'
+                  ? "text-orange-700"
+                  : responseType === 'briefing'
+                  ? "text-indigo-700"
+                  : "text-purple-700"
+              }`}>
+                {assistantResponse}
+              </div>
+              {responseType === 'search' && searchResults.length > 0 && (
+                <div className="text-xs text-green-600 pt-2 border-t border-green-200">
+                  {searchResults.length} contact{searchResults.length !== 1 ? 's' : ''} found • See details below
+                </div>
+              )}
+              {responseType === 'relationship' && (
+                <div className="text-xs text-orange-600 pt-2 border-t border-orange-200">
+                  🧠 Relationship analysis complete • Ask for more details anytime
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Quick Results Summary - Only for search results */}
+        {searchResults.length > 0 && !isSearching && responseType === 'search' && !assistantResponse && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-green-50 border border-green-200 rounded-lg p-4"
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
                 <span className="text-white font-bold">{searchResults.length}</span>
               </div>
               <div className="flex-1">
-                <div className="font-medium text-green-700 dark:text-green-300">
+                <div className="font-medium text-green-700">
                   Found {searchResults.length} contact{searchResults.length !== 1 ? 's' : ''}
                 </div>
-                <div className="text-sm text-green-600 dark:text-green-400">
+                <div className="text-sm text-green-600">
                   Results shown below • Ask a follow-up question anytime
                 </div>
               </div>
@@ -277,7 +341,7 @@ export function VoiceSearchInterface({
         )}
 
         {/* Voice Commands Help - Mobile First */}
-        {isConnected && !isSearching && !currentQuery && (
+        {isConnected && !isSearching && !currentQuery && !assistantResponse && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -287,18 +351,26 @@ export function VoiceSearchInterface({
             <p className="text-sm font-medium text-muted-foreground">Try asking:</p>
             <div className="flex flex-wrap justify-center gap-2">
               {[
-                "Find software engineers",
-                "Who do I know at Google?",
-                "Show me designers",
-                "People in San Francisco"
+                "Who am I meeting next?",
+                "Brief me on Sarah Chen",
+                "Find designers at Google", 
+                "How to reach Elon Musk",
+                "Connections at OpenAI",
+                "I met John at the conference"
               ].map((command, index) => (
                 <span 
                   key={index}
-                  className="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-full text-muted-foreground"
+                  className="text-xs px-3 py-1.5 bg-gray-100 rounded-full text-muted-foreground border border-gray-200"
                 >
                   "{command}"
                 </span>
               ))}
+            </div>
+            <div className="text-xs text-muted-foreground mt-4 space-y-1">
+              <p>📅 <strong>Meeting Briefings:</strong> "Who am I meeting next?" • "Brief me on Sarah Chen"</p>
+              <p>🔍 <strong>Search:</strong> "Find designers" • "Show me VCs"</p>
+              <p>🧠 <strong>Relationship Intelligence:</strong> "Path to Mark Zuckerberg" • "Connections at Meta"</p>
+              <p>💭 <strong>Memory:</strong> "I met John at the conference" • "Where does Sarah work?"</p>
             </div>
           </motion.div>
         )}

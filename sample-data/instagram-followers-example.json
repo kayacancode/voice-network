@@ -1,94 +1,404 @@
 {
-  "followers_1": [
+  "instagram_followers": [
     {
-      "string_list_data": [
-        {
-          "href": "https://www.instagram.com/tech_guru_22",
-          "value": "tech_guru_22",
-          "timestamp": 1640995200
-        }
-      ]
+      "username": "sarahchencodes",
+      "profile_url": "https://www.instagram.com/sarahchencodes",
+      "full_name": "Sarah Chen",
+      "bio": "VP Engineering @Meta | Building the metaverse 🥽 | Tech leadership & career tips",
+      "website": "https://sarahchen.dev",
+      "followers_count": 45200,
+      "following_count": 890,
+      "is_verified": true,
+      "timestamp_followed": 1640995200,
+      "industry": "Technology",
+      "location": "Menlo Park, CA",
+      "engagement_rate": 0.084,
+      "content_type": "Tech Leadership",
+      "last_interaction": 1714646400
     },
     {
-      "string_list_data": [
-        {
-          "href": "https://www.instagram.com/design_maven",
-          "value": "design_maven",
-          "timestamp": 1640995200
-        }
-      ]
+      "username": "ai_researcher_marcus",
+      "profile_url": "https://www.instagram.com/ai_researcher_marcus",
+      "full_name": "Marcus Johnson",
+      "bio": "Principal AI Scientist @NVIDIA | GPU optimization & neural networks 🧠 | Research papers & insights",
+      "website": "https://marcusjohnson.ai",
+      "followers_count": 28900,
+      "following_count": 1200,
+      "is_verified": true,
+      "timestamp_followed": 1641081600,
+      "industry": "Artificial Intelligence",
+      "location": "Santa Clara, CA",
+      "engagement_rate": 0.067,
+      "content_type": "AI Research",
+      "last_interaction": 1714819200
     },
     {
-      "string_list_data": [
-        {
-          "href": "https://www.instagram.com/startup_life",
-          "value": "startup_life",
-          "timestamp": 1640995200
-        }
-      ]
+      "username": "elena_strategy",
+      "profile_url": "https://www.instagram.com/elena_strategy",
+      "full_name": "Elena Rodriguez",
+      "bio": "Partner @McKinsey | Digital transformation strategist 📈 | Fortune 500 consulting insights",
+      "website": "https://elenarodriguez.consulting",
+      "followers_count": 38500,
+      "following_count": 650,
+      "is_verified": true,
+      "timestamp_followed": 1641168000,
+      "industry": "Consulting",
+      "location": "New York, NY",
+      "engagement_rate": 0.091,
+      "content_type": "Business Strategy",
+      "last_interaction": 1714905600
     },
     {
-      "string_list_data": [
-        {
-          "href": "https://www.instagram.com/marketing_pro",
-          "value": "marketing_pro",
-          "timestamp": 1640995200
-        }
-      ]
+      "username": "davidkim_product",
+      "profile_url": "https://www.instagram.com/davidkim_product",
+      "full_name": "David Kim",
+      "bio": "Head of Product @Stripe | Fintech innovator 💳 | Building global payment infrastructure",
+      "website": "https://davidkim.pm",
+      "followers_count": 32100,
+      "following_count": 840,
+      "is_verified": true,
+      "timestamp_followed": 1641254400,
+      "industry": "Financial Technology",
+      "location": "San Francisco, CA",
+      "engagement_rate": 0.076,
+      "content_type": "Product Management",
+      "last_interaction": 1714992000
     },
     {
-      "string_list_data": [
-        {
-          "href": "https://www.instagram.com/fitness_journey",
-          "value": "fitness_journey",
-          "timestamp": 1640995200
-        }
-      ]
+      "username": "priya_ml_engineer",
+      "profile_url": "https://www.instagram.com/priya_ml_engineer",
+      "full_name": "Priya Patel",
+      "bio": "Senior ML Engineer @OpenAI | LLM architectures & AI safety 🤖 | Python tutorials & ML insights",
+      "website": "https://priyapatel.ml",
+      "followers_count": 41800,
+      "following_count": 1100,
+      "is_verified": true,
+      "timestamp_followed": 1641340800,
+      "industry": "Artificial Intelligence",
+      "location": "San Francisco, CA",
+      "engagement_rate": 0.089,
+      "content_type": "Machine Learning",
+      "last_interaction": 1715078400
     },
     {
-      "string_list_data": [
-        {
-          "href": "https://www.instagram.com/travel_photographer",
-          "value": "travel_photographer",
-          "timestamp": 1640995200
-        }
-      ]
+      "username": "james_design_apple",
+      "profile_url": "https://www.instagram.com/james_design_apple",
+      "full_name": "James Thompson",
+      "bio": "Design Director @Apple | iOS UX & accessibility 📱 | Design systems & human-centered design",
+      "website": "https://jamesthompson.design",
+      "followers_count": 56300,
+      "following_count": 720,
+      "is_verified": true,
+      "timestamp_followed": 1641427200,
+      "industry": "Technology",
+      "location": "Cupertino, CA",
+      "engagement_rate": 0.094,
+      "content_type": "UX Design",
+      "last_interaction": 1715164800
     },
     {
-      "string_list_data": [
-        {
-          "href": "https://www.instagram.com/foodie_adventures",
-          "value": "foodie_adventures",
-          "timestamp": 1640995200
-        }
-      ]
+      "username": "aisha_salesforce_svp",
+      "profile_url": "https://www.instagram.com/aisha_salesforce_svp",
+      "full_name": "Aisha Okafor",
+      "bio": "SVP Engineering @Salesforce | Cloud architecture & engineering leadership 🌩️ | Diversity in tech advocate",
+      "website": "https://aishaokafor.tech",
+      "followers_count": 34700,
+      "following_count": 580,
+      "is_verified": true,
+      "timestamp_followed": 1641513600,
+      "industry": "Cloud Software",
+      "location": "San Francisco, CA",
+      "engagement_rate": 0.072,
+      "content_type": "Engineering Leadership",
+      "last_interaction": 1715251200
     },
     {
-      "string_list_data": [
-        {
-          "href": "https://www.instagram.com/creative_mind",
-          "value": "creative_mind",
-          "timestamp": 1640995200
-        }
-      ]
+      "username": "luis_tesla_autopilot",
+      "profile_url": "https://www.instagram.com/luis_tesla_autopilot",
+      "full_name": "Luis Gonzalez",
+      "bio": "Senior SWE @Tesla | FSD & autopilot neural networks 🚗 | Computer vision & autonomous driving",
+      "website": "https://luisgonzalez.dev",
+      "followers_count": 23900,
+      "following_count": 950,
+      "is_verified": false,
+      "timestamp_followed": 1641600000,
+      "industry": "Automotive Technology",
+      "location": "Austin, TX",
+      "engagement_rate": 0.065,
+      "content_type": "Autonomous Vehicles",
+      "last_interaction": 1715337600
     },
     {
-      "string_list_data": [
-        {
-          "href": "https://www.instagram.com/entrepreneur_daily",
-          "value": "entrepreneur_daily",
-          "timestamp": 1640995200
-        }
-      ]
+      "username": "rachel_airbnb_pm",
+      "profile_url": "https://www.instagram.com/rachel_airbnb_pm",
+      "full_name": "Rachel Williams",
+      "bio": "Principal PM @Airbnb | Marketplace growth & international expansion 🏠 | Travel & product insights",
+      "website": "https://rachelwilliams.pm",
+      "followers_count": 19800,
+      "following_count": 670,
+      "is_verified": false,
+      "timestamp_followed": 1641686400,
+      "industry": "Travel Technology",
+      "location": "San Francisco, CA",
+      "engagement_rate": 0.081,
+      "content_type": "Product Management",
+      "last_interaction": 1715424000
     },
     {
-      "string_list_data": [
-        {
-          "href": "https://www.instagram.com/code_artist",
-          "value": "code_artist",
-          "timestamp": 1640995200
-        }
-      ]
+      "username": "ahmed_goldman_md",
+      "profile_url": "https://www.instagram.com/ahmed_goldman_md",
+      "full_name": "Ahmed Hassan",
+      "bio": "Managing Director @Goldman Sachs | Tech M&A & IPOs 💰 | Capital markets & deal insights",
+      "website": "https://ahmedhassan.finance",
+      "followers_count": 27400,
+      "following_count": 450,
+      "is_verified": true,
+      "timestamp_followed": 1641772800,
+      "industry": "Investment Banking",
+      "location": "New York, NY",
+      "engagement_rate": 0.058,
+      "content_type": "Finance & Deals",
+      "last_interaction": 1715500400
+    },
+    {
+      "username": "sophia_google_search",
+      "profile_url": "https://www.instagram.com/sophia_google_search",
+      "full_name": "Sophia Lee",
+      "bio": "Staff Engineer @Google | Search infrastructure & distributed systems ⚡ | Open source & performance",
+      "website": "https://sophialee.dev",
+      "followers_count": 31200,
+      "following_count": 890,
+      "is_verified": true,
+      "timestamp_followed": 1641859200,
+      "industry": "Technology",
+      "location": "Mountain View, CA",
+      "engagement_rate": 0.073,
+      "content_type": "Software Engineering",
+      "last_interaction": 1715586800
+    },
+    {
+      "username": "carlos_uber_vp",
+      "profile_url": "https://www.instagram.com/carlos_uber_vp",
+      "full_name": "Carlos Martinez",
+      "bio": "VP Product @Uber | Autonomous vehicles & urban mobility 🚕 | Transportation innovation",
+      "website": "https://carlosmartinez.product",
+      "followers_count": 25600,
+      "following_count": 730,
+      "is_verified": true,
+      "timestamp_followed": 1641945600,
+      "industry": "Transportation Technology",
+      "location": "San Francisco, CA",
+      "engagement_rate": 0.069,
+      "content_type": "Product Strategy",
+      "last_interaction": 1715673200
+    },
+    {
+      "username": "fatima_azure_ai",
+      "profile_url": "https://www.instagram.com/fatima_azure_ai",
+      "full_name": "Fatima Al-Zahra",
+      "bio": "Principal PM @Microsoft | Azure AI platform & developer tools ☁️ | Cloud computing insights",
+      "website": "https://fatimaalzahra.cloud",
+      "followers_count": 22800,
+      "following_count": 620,
+      "is_verified": false,
+      "timestamp_followed": 1642032000,
+      "industry": "Cloud Computing",
+      "location": "Redmond, WA",
+      "engagement_rate": 0.077,
+      "content_type": "Cloud Platform",
+      "last_interaction": 1715759600
+    },
+    {
+      "username": "michael_jpmorgan_digital",
+      "profile_url": "https://www.instagram.com/michael_jpmorgan_digital",
+      "full_name": "Michael O'Connor",
+      "bio": "Head of Digital Innovation @JPMorgan | Blockchain & crypto initiatives 🔗 | Financial innovation",
+      "website": "https://michaeloconnor.fintech",
+      "followers_count": 18700,
+      "following_count": 540,
+      "is_verified": false,
+      "timestamp_followed": 1642118400,
+      "industry": "Financial Services",
+      "location": "New York, NY",
+      "engagement_rate": 0.063,
+      "content_type": "Blockchain & Fintech",
+      "last_interaction": 1715846000
+    },
+    {
+      "username": "nina_palantir_data",
+      "profile_url": "https://www.instagram.com/nina_palantir_data",
+      "full_name": "Nina Volkov",
+      "bio": "Principal Data Scientist @Palantir | ML for government & enterprise 📊 | Big data analytics",
+      "website": "https://ninavolkov.data",
+      "followers_count": 16900,
+      "following_count": 780,
+      "is_verified": false,
+      "timestamp_followed": 1642204800,
+      "industry": "Data Analytics",
+      "location": "Palo Alto, CA",
+      "engagement_rate": 0.085,
+      "content_type": "Data Science",
+      "last_interaction": 1715932400
+    },
+    {
+      "username": "robert_aws_serverless",
+      "profile_url": "https://www.instagram.com/robert_aws_serverless",
+      "full_name": "Robert Zhang",
+      "bio": "Senior Principal Engineer @Amazon | AWS serverless & cloud architecture ⚡ | Infrastructure insights",
+      "website": "https://robertzhang.aws",
+      "followers_count": 29300,
+      "following_count": 690,
+      "is_verified": true,
+      "timestamp_followed": 1642291200,
+      "industry": "E-commerce Technology",
+      "location": "Seattle, WA",
+      "engagement_rate": 0.071,
+      "content_type": "Cloud Infrastructure",
+      "last_interaction": 1716018800
+    },
+    {
+      "username": "isabella_netflix_ml",
+      "profile_url": "https://www.instagram.com/isabella_netflix_ml",
+      "full_name": "Isabella Brown",
+      "bio": "Director Content Tech @Netflix | ML recommendations & video delivery 🎬 | Streaming technology",
+      "website": "https://isabellabrown.streaming",
+      "followers_count": 33500,
+      "following_count": 820,
+      "is_verified": true,
+      "timestamp_followed": 1642377600,
+      "industry": "Entertainment Technology",
+      "location": "Los Gatos, CA",
+      "engagement_rate": 0.088,
+      "content_type": "Streaming Tech",
+      "last_interaction": 1716105200
+    },
+    {
+      "username": "kevin_spacex_rockets",
+      "profile_url": "https://www.instagram.com/kevin_spacex_rockets",
+      "full_name": "Kevin Park",
+      "bio": "Principal Engineer @SpaceX | Rocket propulsion & Mars missions 🚀 | Aerospace engineering",
+      "website": "https://kevinpark.space",
+      "followers_count": 47800,
+      "following_count": 430,
+      "is_verified": true,
+      "timestamp_followed": 1642464000,
+      "industry": "Aerospace",
+      "location": "Hawthorne, CA",
+      "engagement_rate": 0.096,
+      "content_type": "Space Technology",
+      "last_interaction": 1716191600
+    },
+    {
+      "username": "maria_shopify_eng",
+      "profile_url": "https://www.instagram.com/maria_shopify_eng",
+      "full_name": "Maria Santos",
+      "bio": "VP Engineering @Shopify | E-commerce platform scaling 🛒 | Global merchant tools & infrastructure",
+      "website": "https://mariasantos.ecommerce",
+      "followers_count": 21400,
+      "following_count": 650,
+      "is_verified": false,
+      "timestamp_followed": 1642550400,
+      "industry": "E-commerce Platform",
+      "location": "Ottawa, ON",
+      "engagement_rate": 0.074,
+      "content_type": "E-commerce Engineering",
+      "last_interaction": 1716278000
+    },
+    {
+      "username": "anthony_zoom_product",
+      "profile_url": "https://www.instagram.com/anthony_zoom_product",
+      "full_name": "Anthony Taylor",
+      "bio": "Senior Director Product @Zoom | Enterprise collaboration tools 💻 | Remote work & video tech",
+      "website": "https://anthonytaylor.video",
+      "followers_count": 24700,
+      "following_count": 560,
+      "is_verified": false,
+      "timestamp_followed": 1642636800,
+      "industry": "Video Communications",
+      "location": "San Jose, CA",
+      "engagement_rate": 0.066,
+      "content_type": "Video Technology",
+      "last_interaction": 1716364400
+    },
+    {
+      "username": "yuki_sony_cameras",
+      "profile_url": "https://www.instagram.com/yuki_sony_cameras",
+      "full_name": "Yuki Tanaka",
+      "bio": "Principal Hardware Engineer @Sony | Camera sensors & imaging tech 📷 | Photography & hardware",
+      "website": "https://yukitanaka.imaging",
+      "followers_count": 38900,
+      "following_count": 920,
+      "is_verified": true,
+      "timestamp_followed": 1642723200,
+      "industry": "Consumer Electronics",
+      "location": "Tokyo, Japan",
+      "engagement_rate": 0.092,
+      "content_type": "Camera Technology",
+      "last_interaction": 1716450800
+    },
+    {
+      "username": "zara_twilio_devrel",
+      "profile_url": "https://www.instagram.com/zara_twilio_devrel",
+      "full_name": "Zara Mohamed",
+      "bio": "Head of DevRel @Twilio | API strategy & developer community 📡 | Communication technology",
+      "website": "https://zaramohamed.apis",
+      "followers_count": 19200,
+      "following_count": 1100,
+      "is_verified": false,
+      "timestamp_followed": 1642809600,
+      "industry": "Communications Technology",
+      "location": "San Francisco, CA",
+      "engagement_rate": 0.083,
+      "content_type": "Developer Relations",
+      "last_interaction": 1716537200
+    },
+    {
+      "username": "dimitri_nvidia_graphics",
+      "profile_url": "https://www.instagram.com/dimitri_nvidia_graphics",
+      "full_name": "Dimitri Petrov",
+      "bio": "Senior Research Scientist @NVIDIA | Ray tracing & GPU graphics 🎮 | Real-time rendering research",
+      "website": "https://dimitripetrov.graphics",
+      "followers_count": 26800,
+      "following_count": 740,
+      "is_verified": false,
+      "timestamp_followed": 1642896000,
+      "industry": "Computer Graphics",
+      "location": "Santa Clara, CA",
+      "engagement_rate": 0.078,
+      "content_type": "Graphics Research",
+      "last_interaction": 1716623600
+    },
+    {
+      "username": "amanda_slack_design",
+      "profile_url": "https://www.instagram.com/amanda_slack_design",
+      "full_name": "Amanda Foster",
+      "bio": "VP Product Design @Slack | Design systems & workplace collaboration 🎨 | UX leadership",
+      "website": "https://amandafoster.design",
+      "followers_count": 32600,
+      "following_count": 610,
+      "is_verified": true,
+      "timestamp_followed": 1642982400,
+      "industry": "Enterprise Software",
+      "location": "San Francisco, CA",
+      "engagement_rate": 0.087,
+      "content_type": "Product Design",
+      "last_interaction": 1716710000
+    },
+    {
+      "username": "oliver_bmw_autonomous",
+      "profile_url": "https://www.instagram.com/oliver_bmw_autonomous",
+      "full_name": "Oliver Schmidt",
+      "bio": "Director Autonomous Driving @BMW | Self-driving luxury vehicles 🏎️ | Automotive AI & safety",
+      "website": "https://oliverschmidt.automotive",
+      "followers_count": 28300,
+      "following_count": 580,
+      "is_verified": false,
+      "timestamp_followed": 1643068800,
+      "industry": "Automotive",
+      "location": "Munich, Germany",
+      "engagement_rate": 0.075,
+      "content_type": "Autonomous Vehicles",
+      "last_interaction": 1716796400
     }
   ]
-} 
+}

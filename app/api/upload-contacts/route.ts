@@ -13,23 +13,45 @@ const openai = new OpenAI({
 export async function POST(request: NextRequest) {
   try {
     const { contacts, type } = await request.json();
+    console.log(`API: Received ${contacts.length} ${type} contacts for upload`);
 
     if (!contacts || !Array.isArray(contacts)) {
+      console.error('Invalid contacts data received');
       return NextResponse.json(
         { error: "Invalid contacts data" },
         { status: 400 }
       );
     }
 
+    // Check environment variables
+    if (!process.env.PINECONE_API_KEY) {
+      console.error('PINECONE_API_KEY not found in environment');
+      return NextResponse.json(
+        { error: "Pinecone API key not configured" },
+        { status: 500 }
+      );
+    }
+
+    if (!process.env.PINECONE_INDEX_NAME) {
+      console.error('PINECONE_INDEX_NAME not found in environment');
+      return NextResponse.json(
+        { error: "Pinecone index name not configured" },
+        { status: 500 }
+      );
+    }
+
+    console.log(`Connecting to Pinecone index: ${process.env.PINECONE_INDEX_NAME}`);
     const index = pinecone.index(process.env.PINECONE_INDEX_NAME!);
 
     // Process contacts in batches for efficiency
     const batchSize = 10;
     const totalBatches = Math.ceil(contacts.length / batchSize);
+    console.log(`Processing ${totalBatches} batches of contacts`);
     
     for (let i = 0; i < totalBatches; i++) {
       const batch = contacts.slice(i * batchSize, (i + 1) * batchSize);
       const vectors = [];
+      console.log(`Processing batch ${i + 1}/${totalBatches} with ${batch.length} contacts`);
 
       for (const contact of batch) {
         // Create a text representation of the contact for embedding
@@ -71,11 +93,14 @@ export async function POST(request: NextRequest) {
       }
 
       if (vectors.length > 0) {
+        console.log(`Upserting ${vectors.length} vectors to Pinecone`);
         // Upsert vectors to Pinecone
         await index.upsert(vectors);
+        console.log(`Successfully upserted batch ${i + 1}`);
       }
     }
 
+    console.log(`Upload completed: ${contacts.length} contacts processed`);
     return NextResponse.json({
       success: true,
       message: `Successfully uploaded ${contacts.length} contacts`,
