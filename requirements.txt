@@ -18,4 +18,12 @@ aiohttp>=3.8.0
 python-dotenv
 
 # Additional dependencies that might be needed
-requests>=2.31.0 
+requests>=2.31.0
+
+# Perplexity AI for web research
+perplexipy>=1.3.1
+
+# Added from the code block
+pandas
+pinecone-client
+tqdm 

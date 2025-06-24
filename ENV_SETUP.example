@@ -10,6 +10,9 @@ OPENAI_API_KEY=your_openai_api_key
 PINECONE_API_KEY=your_pinecone_api_key
 PINECONE_INDEX_NAME=ai-network
 
+# Perplexity AI Configuration
+PERPLEXITY_API_KEY=your_perplexity_api_key
+
 # Google Calendar Integration
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret

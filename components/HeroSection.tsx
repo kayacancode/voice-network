@@ -2,14 +2,14 @@ import { motion, useMotionValue, useTransform, ResolvedValues } from 'framer-mot
 import { useEffect, useState, useRef } from 'react';
 
 const exampleQueries = [
-  "Who's into rock climbing?",
-  "Find software engineers in Austin",
-  "Show me book club members", 
-  "Connect me with VCs in Silicon Valley",
-  "Find dog owners in my area",
-  "Who's hiring product managers?",
-  "Show me startup founders nearby",
-  "Find hiking buddies",
+  "Find engineers at Google",
+  "Who can introduce me to VCs?",
+  "Show me product managers in San Francisco", 
+  "Connect me with startup founders",
+  "Find designers at Apple",
+  "Who's hiring in fintech?",
+  "Show me sales leaders at Microsoft",
+  "Connect me with marketing directors",
 ];
 
 const fadeInUp = {
@@ -66,7 +66,7 @@ export function HeroSection() {
         <motion.div variants={fadeInUp}>
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/8 border border-primary/15 text-primary text-sm font-medium mb-8 backdrop-blur-sm">
             <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-            Voice-enabled network search
+            AI-powered professional networking
           </div>
         </motion.div>
 
@@ -75,11 +75,11 @@ export function HeroSection() {
           variants={fadeInUp}
           className="text-5xl md:text-7xl lg:text-8xl font-bold text-foreground mb-6 tracking-tight leading-none"
         >
-          Your network,
-          <br />
           <span className="bg-gradient-to-r from-primary via-primary/80 to-accent bg-clip-text text-transparent">
-            voice-powered
+            Leverage
           </span>
+          <br />
+          your network
         </motion.h1>
 
         {/* Subtitle */}
@@ -87,8 +87,8 @@ export function HeroSection() {
           variants={fadeInUp}
           className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed font-light"
         >
-          Search your personal and professional networks using natural voice commands. 
-          Find friends, colleagues, and connections instantly with AI-powered insights.
+          Unlock the power of your professional connections with voice-driven search and AI insights. 
+          Find the right people, discover warm introductions, and expand your opportunities instantly.
         </motion.p>
 
         {/* Example Queries */}
@@ -111,22 +111,22 @@ export function HeroSection() {
         {/* CTA Buttons */}
         <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
           <button className="group relative px-8 py-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-semibold text-lg transition-all duration-200 shadow-premium hover:shadow-premium-lg transform hover:-translate-y-0.5">
-            <span className="relative z-10">Start Voice Search</span>
+            <span className="relative z-10">Unlock Your Network</span>
             <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
           </button>
           
           <button className="px-8 py-4 bg-card/60 hover:bg-card/80 text-foreground border border-border hover:border-primary/30 rounded-xl font-semibold text-lg transition-all duration-200 backdrop-blur-sm shadow-sm hover:shadow-md">
-            Upload Your Contacts
+            Upload Your Network
           </button>
         </motion.div>
 
         {/* Feature Pills */}
         <motion.div variants={fadeInUp} className="flex flex-wrap gap-3 justify-center items-center">
           {[
-            "Voice Recognition",
-            "AI-Powered Search",
-            "Multi-Platform Support", 
-            "Real-time Results"
+            "Network Intelligence",
+            "Warm Introductions",
+            "Opportunity Discovery", 
+            "Professional Insights"
           ].map((feature, index) => (
             <motion.div
               key={feature}

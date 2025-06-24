@@ -153,9 +153,16 @@ class CalendarService:
             start_time_str = event.get('start', '')
             if start_time_str:
                 try:
-                    # Parse the start time
+                    # Parse the start time with proper timezone handling
                     if 'T' in start_time_str:  # DateTime format
-                        start_time = datetime.fromisoformat(start_time_str.replace('Z', '+00:00'))
+                        if start_time_str.endswith('Z'):
+                            start_time = datetime.fromisoformat(start_time_str.replace('Z', '+00:00'))
+                        else:
+                            start_time = datetime.fromisoformat(start_time_str)
+                            # Convert to UTC for comparison if timezone-aware
+                            if start_time.tzinfo is not None:
+                                start_time = start_time.utctimetuple()
+                                start_time = datetime(*start_time[:6])
                     else:  # Date format
                         start_time = datetime.fromisoformat(start_time_str)
                     
@@ -216,7 +223,10 @@ class CalendarService:
             if start_time_str:
                 try:
                     if 'T' in start_time_str:
-                        start_time = datetime.fromisoformat(start_time_str.replace('Z', '+00:00'))
+                        if start_time_str.endswith('Z'):
+                            start_time = datetime.fromisoformat(start_time_str.replace('Z', '+00:00'))
+                        else:
+                            start_time = datetime.fromisoformat(start_time_str)
                         if start_time.date() == today:
                             today_events.append(event)
                     else:
@@ -248,7 +258,10 @@ class CalendarService:
         if start_time:
             try:
                 if 'T' in start_time:
-                    dt = datetime.fromisoformat(start_time.replace('Z', '+00:00'))
+                    if start_time.endswith('Z'):
+                        dt = datetime.fromisoformat(start_time.replace('Z', '+00:00'))
+                    else:
+                        dt = datetime.fromisoformat(start_time)
                     time_str = dt.strftime("at %I:%M %p on %B %d")
                 else:
                     dt = datetime.fromisoformat(start_time)
