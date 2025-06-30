@@ -21,6 +21,9 @@ from perplexipy import PerplexityClient
 # Import the calendar service
 from calendar_service import calendar_service
 
+# Import prompt configuration
+from prompt_config import PromptConfig, PromptUtils
+
 # Load your .env.local with PINECONE_API_KEY, PINECONE_INDEX_NAME, OPENAI_API_KEY
 load_dotenv('.env.local')
 
@@ -28,11 +31,7 @@ load_dotenv('.env.local')
 class ContactSearchAssistant(Agent):
     def __init__(self) -> None:
         super().__init__(
-            instructions=(
-                "You are an AI assistant that helps users search their professional network "
-                "and capture voice-driven memories about people they meet. "
-                "You can search contacts, save memories about people, and recall stored memories."
-            )
+            instructions=PromptConfig.CORE_INSTRUCTIONS
         )
         # Initialize Pinecone & OpenAI clients
         self.pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
@@ -56,29 +55,7 @@ class ContactSearchAssistant(Agent):
         variations.append(query.strip())
         
         # Common speech-to-text corrections
-        corrections = {
-            # Common transcription errors for tech roles
-            'engineergs': 'engineers',
-            'engineerg': 'engineer',
-            'enginners': 'engineers',
-            'enginer': 'engineer',
-            'developpers': 'developers',
-            'develper': 'developer',
-            'mangager': 'manager',
-            'mangers': 'managers',
-            'desiner': 'designer',
-            'desingers': 'designers',
-            'anlyst': 'analyst',
-            'anlysts': 'analysts',
-            'scrum master': 'scrum master',
-            'scrummaster': 'scrum master',
-            'devops': 'devops engineer',
-            'datascientist': 'data scientist',
-            'prodcut': 'product',
-            'frontent': 'frontend',
-            'bakend': 'backend',
-            'fullstack': 'full stack',
-        }
+        corrections = PromptConfig.SearchConfig.TRANSCRIPTION_CORRECTIONS
         
         # Apply corrections
         corrected_query = query.lower()
@@ -104,20 +81,7 @@ class ContactSearchAssistant(Agent):
                 variations.append(' '.join(new_words))
         
         # Add expanded terms for common roles
-        role_expansions = {
-            'engineer': ['engineer', 'engineering', 'software engineer', 'developer'],
-            'engineers': ['engineers', 'engineering', 'software engineers', 'developers'],
-            'dev': ['developer', 'engineer', 'software engineer'],
-            'devs': ['developers', 'engineers', 'software engineers'],
-            'designer': ['designer', 'design', 'ux designer', 'ui designer', 'graphic designer'],
-            'designers': ['designers', 'design', 'ux designers', 'ui designers', 'graphic designers'],
-            'manager': ['manager', 'management', 'project manager', 'product manager'],
-            'managers': ['managers', 'management', 'project managers', 'product managers'],
-            'pm': ['product manager', 'project manager', 'manager'],
-            'qa': ['quality assurance', 'tester', 'qa engineer'],
-            'sales': ['sales', 'sales representative', 'account executive'],
-            'marketing': ['marketing', 'digital marketing', 'marketing specialist'],
-        }
+        role_expansions = PromptConfig.SearchConfig.ROLE_EXPANSIONS
         
         # Check if query contains expandable terms
         query_lower = query.lower()
@@ -205,24 +169,16 @@ class ContactSearchAssistant(Agent):
         """Turn a list of contacts into a friendly, conversational string."""
         if not contacts:
             # Suggest alternatives for common transcription errors
-            suggestions = []
-            query_lower = query.lower()
+            suggestions = PromptUtils.get_search_suggestions(query)
             
-            # Common corrections to suggest
-            if 'engineer' in query_lower:
-                suggestions.extend(['engineers', 'developers', 'software engineers'])
-            elif 'design' in query_lower:
-                suggestions.extend(['designers', 'UX designers', 'UI designers'])
-            elif 'manager' in query_lower or 'manag' in query_lower:
-                suggestions.extend(['managers', 'product managers', 'project managers'])
-            elif 'dev' in query_lower:
-                suggestions.extend(['developers', 'engineers', 'software developers'])
-            
-            response = f"I searched for '{query}' but found no matches. "
+            response = PromptUtils.format_template(
+                PromptConfig.ResponseTemplates.NO_CONTACTS_FOUND, 
+                query=query
+            )
             if suggestions:
-                response += f"You might try searching for: {', '.join(suggestions[:3])}."
+                response += f" You might try searching for: {', '.join(suggestions)}."
             else:
-                response += "Would you like to try a different term?"
+                response += " Would you like to try a different term?"
             return response
 
         if len(contacts) == 1:
@@ -618,12 +574,7 @@ class ContactSearchAssistant(Agent):
 
     @function_tool(
         name="job_search",
-        description=(
-            "Search for job opportunities at specific companies. "
-            "Use this when the user asks about jobs, careers, openings, or opportunities at a company. "
-            "Examples: 'Does Pinecone have any job openings?', 'Are there opportunities at Google?', "
-            "'What jobs are available at Microsoft?'"
-        )
+        description=PromptConfig.ToolDescriptions.JOB_SEARCH
     )
     async def _job_search_tool(
         self, context: RunContext, query: str
@@ -695,12 +646,7 @@ class ContactSearchAssistant(Agent):
 
     @function_tool(
         name="intelligent_search",
-        description=(
-            "Perform an intelligent hybrid search that combines your network data with real-time web research. "
-            "This analyzes your connections, finds related people in your network, and uses that context "
-            "to perform more targeted web research. Use this for questions like 'Tell me about [person] and our connections' "
-            "or 'Research [person] and show network insights'."
-        )
+        description=PromptConfig.ToolDescriptions.INTELLIGENT_SEARCH
     )
     async def _intelligent_search_tool(
         self, context: RunContext, query: str
@@ -793,10 +739,7 @@ class ContactSearchAssistant(Agent):
 
     @function_tool(
         name="search_contacts",
-        description=(
-            "Search your network for people matching the query; "
-            "returns a conversational summary."
-        )
+        description=PromptConfig.ToolDescriptions.SEARCH_CONTACTS
     )
     async def _search_contacts_tool(
         self, context: RunContext, query: str
@@ -806,11 +749,7 @@ class ContactSearchAssistant(Agent):
 
     @function_tool(
         name="save_memory",
-        description=(
-            "Save a memory about a person you met or learned about. "
-            "Use this when the user mentions meeting someone or learning facts about them. "
-            "For example: 'I met Sarah today, she works at Google as a software engineer.'"
-        )
+        description=PromptConfig.ToolDescriptions.SAVE_MEMORY
     )
     async def _save_memory_tool(
         self, context: RunContext, memory_text: str
@@ -820,19 +759,19 @@ class ContactSearchAssistant(Agent):
         if result.get('success'):
             person = result.get('person', 'someone')
             details = result.get('details', 'information')
-            return f"Got it—saved that {person} {details}."
+            return PromptUtils.format_template(
+                PromptConfig.ResponseTemplates.MEMORY_SAVED_SUCCESS,
+                person=person, details=details
+            )
         else:
             if result.get('confidence', 0) < 0.7:
-                return "I couldn't find clear information about a specific person in what you said. Could you be more specific about who and what you learned about them?"
+                return PromptConfig.ResponseTemplates.MEMORY_SAVED_LOW_CONFIDENCE
             else:
-                return "I had trouble saving that memory. Could you try rephrasing it?"
+                return PromptConfig.ResponseTemplates.MEMORY_SAVED_ERROR
 
     @function_tool(
         name="recall_memory",
-        description=(
-            "Recall stored memories about people. "
-            "Use this when the user asks questions like 'Where does Sarah work?' or 'What do I know about John?'"
-        )
+        description=PromptConfig.ToolDescriptions.RECALL_MEMORY
     )
     async def _recall_memory_tool(
         self, context: RunContext, query: str
@@ -842,16 +781,11 @@ class ContactSearchAssistant(Agent):
         if result.get('success'):
             return result.get('message', 'I found that information.')
         else:
-            return result.get('message', "I don't have any memories that match your query.")
+            return result.get('message', PromptConfig.ResponseTemplates.MEMORY_RECALL_NONE)
 
     @function_tool(
         name="research_person",
-        description=(
-            "Get a comprehensive research briefing about a person using real-time web search. "
-            "Use this when the user asks 'Tell me about [person]', 'Research [person]', "
-            "'Brief me on [person]', or 'What should I know about [person]?'. "
-            "This combines network data, calendar context, stored memories, and live web research."
-        )
+        description=PromptConfig.ToolDescriptions.RESEARCH_PERSON
     )
     async def _research_person_tool(
         self, context: RunContext, person_name: str
@@ -898,7 +832,10 @@ class ContactSearchAssistant(Agent):
                 briefing_parts.append("Web research unavailable - please ensure your Perplexity API key is configured.")
             
             if not briefing_parts:
-                return f"I couldn't find detailed information about {person_name}. Try searching your network first, or make sure the name is spelled correctly."
+                return PromptUtils.format_template(
+                    PromptConfig.ErrorMessages.NO_SEARCH_RESULTS,
+                    query=person_name
+                )
             
             # Combine all parts into a cohesive briefing
             briefing = " ".join(briefing_parts)
@@ -911,15 +848,14 @@ class ContactSearchAssistant(Agent):
             
         except Exception as e:
             print(f"Error creating research briefing: {e}")
-            return f"I had trouble researching {person_name}. Please try again or check your API configurations."
+            return PromptUtils.format_template(
+                PromptConfig.ErrorMessages.GENERAL_RESEARCH_ERROR,
+                query=person_name
+            )
 
     @function_tool(
         name="get_calendar_briefing",
-        description=(
-            "Get briefing information about your next meeting or a specific person. "
-            "Use this when the user asks 'Who am I meeting next?', 'What's my next meeting?', "
-            "or 'Brief me on [person's name]'. This provides context, background, and talking points."
-        )
+        description=PromptConfig.ToolDescriptions.GET_CALENDAR_BRIEFING
     )
     async def _get_calendar_briefing_tool(
         self, context: RunContext, query: str = ""
@@ -937,11 +873,7 @@ class ContactSearchAssistant(Agent):
 
     @function_tool(
         name="find_next_meeting",
-        description=(
-            "Find your next upcoming meeting. "
-            "Use this when the user asks 'Who am I meeting with next?', 'What's my next meeting?', "
-            "or 'When is my next meeting?'"
-        )
+        description=PromptConfig.ToolDescriptions.FIND_NEXT_MEETING
     )
     async def _find_next_meeting_tool(
         self, context: RunContext
@@ -972,11 +904,7 @@ class ContactSearchAssistant(Agent):
 
     @function_tool(
         name="get_todays_schedule",
-        description=(
-            "Get all meetings scheduled for today. "
-            "Use this when the user asks 'What's my schedule today?', 'What meetings do I have today?', "
-            "or 'Show me today's meetings'"
-        )
+        description=PromptConfig.ToolDescriptions.GET_TODAYS_SCHEDULE
     )
     async def _get_todays_schedule_tool(
         self, context: RunContext
@@ -1101,11 +1029,7 @@ class ContactSearchAssistant(Agent):
 
     @function_tool(
         name="search_meetings_by_person",
-        description=(
-            "Search for meetings with a specific person. "
-            "Use this when the user asks 'When am I meeting with John?', 'Do I have meetings with Sarah?', "
-            "or 'Find my meetings with [person name]'"
-        )
+        description=PromptConfig.ToolDescriptions.SEARCH_MEETINGS_BY_PERSON
     )
     async def _search_meetings_by_person_tool(
         self, context: RunContext, person_name: str
@@ -1211,11 +1135,7 @@ class ContactSearchAssistant(Agent):
 
     @function_tool(
         name="get_upcoming_events",
-        description=(
-            "Get a summary of upcoming calendar events. "
-            "Use this when the user asks 'What's coming up?', 'Show me my upcoming meetings', "
-            "or 'What do I have this week?'"
-        )
+        description=PromptConfig.ToolDescriptions.GET_UPCOMING_EVENTS
     )
     async def _get_upcoming_events_tool(
         self, context: RunContext, days_ahead: int = 7
@@ -1293,13 +1213,7 @@ async def entrypoint(ctx: agents.JobContext):
 
     # Kick things off with a greeting
     await session.generate_reply(
-        instructions=(
-            "Hi! I'm QuickBrief, your voice AI assistant for professional networking, calendar management, and intelligent research. "
-            "I can help you search your network, manage your calendar, get meeting briefings, capture memories, and research people with network-informed web data. "
-            "Try saying: 'Who am I meeting next?', 'What's my schedule today?', 'Find designers at Google', "
-            "'When am I meeting with John?', 'I met Sarah today', 'Tell me about Sarah Chen and our connections', "
-            "or use intelligent search like 'Research John Smith and show network insights' for comprehensive briefings that combine your network data with real-time web research."
-        )
+        instructions=PromptConfig.GREETING_INSTRUCTIONS
     )
 
 
